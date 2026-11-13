@@ -9,9 +9,16 @@
 <script src="lib/matter.min.js"></script>
 <!-- Confetti Effect -->
 <script src="lib/confetti.browser.min.js"></script>
-<link rel="preload" as="image" href="Images/bg-light.webp">
+<link rel="preload" as="image" href="Images/bg-stage.webp">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/barlow-condensed-latin-700-normal.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/barlow-latin-500-normal.woff2">
 
 <style>
+    @font-face{font-family:'Barlow Condensed';font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-latin-600-normal.woff2) format('woff2')}
+    @font-face{font-family:'Barlow Condensed';font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-latin-700-normal.woff2) format('woff2')}
+    @font-face{font-family:'Barlow Condensed';font-weight:800;font-display:swap;src:url(fonts/barlow-condensed-latin-800-normal.woff2) format('woff2')}
+    @font-face{font-family:'Barlow';font-weight:500;font-display:swap;src:url(fonts/barlow-latin-500-normal.woff2) format('woff2')}
+    @font-face{font-family:'Barlow';font-weight:700;font-display:swap;src:url(fonts/barlow-latin-700-normal.woff2) format('woff2')}
     :root {
         --primary: #FFD700; /* Gold */
         --accent: #00E676;  /* Neon Green */
@@ -24,8 +31,8 @@
         margin: 0;
         width: 100%;
         height: 100%;
-        background-color: #dff0ff;
-        background-image: url('Images/bg-light.webp');
+        background-color: #070a24;
+        background-image: url('Images/bg-stage.webp');
         background-size: cover;
         background-position: center bottom;
         background-repeat: no-repeat;
@@ -77,7 +84,7 @@
 
     /* LOADING & FAIL SCREENS */
     #loading-screen { 
-        background: linear-gradient(#cfe8ff, #f2f9ff); 
+        background: #070a24; 
         opacity: 1; 
         pointer-events: auto; 
         z-index: 100; 
@@ -179,46 +186,73 @@
     }
 
 
-    #score{position:fixed;left:12px;top:12px;z-index:45;display:flex;gap:8px;pointer-events:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
-    .chip{background:rgba(255,255,255,.94);border:2px solid #c9d8ee;border-radius:30px;padding:6px 14px;color:#0f2747;font-weight:800;font-size:clamp(13px,3.4vw,17px);box-shadow:0 4px 14px rgba(15,39,71,.14)}
-    .chip b{color:#2563eb}
-    #hint{position:fixed;left:50%;top:62px;transform:translateX(-50%);z-index:45;pointer-events:none;opacity:0;transition:opacity .4s;
-        background:rgba(255,255,255,.96);border:2px solid #2563eb;border-radius:40px;padding:10px 22px;color:#0f2747;font-weight:700;
-        font-size:clamp(13px,3.5vw,18px);text-align:center;max-width:90vw;box-shadow:0 6px 20px rgba(15,39,71,.15);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+    :root{--gold:#e0a82e;--gold2:#f6cf6a;--ink:#f4f1e8;--mute:#aab3e6}
+    body{font-family:'Barlow',system-ui,-apple-system,'Segoe UI',Arial,sans-serif}
+    #dawn{position:fixed;inset:0;pointer-events:none;opacity:var(--lit,0);transition:opacity 1.6s ease;
+        background:linear-gradient(to top,#3d7a5e 0,#2c6a4f 13.8%,rgba(0,0,0,0) 13.9%),
+                   radial-gradient(ellipse 70% 38% at 50% 86%,rgba(255,206,120,.95),rgba(255,206,120,0) 72%),
+                   linear-gradient(to top,#f7d9a0 0%,#a9d3f7 48%,#e4f2ff 100%)}
+    #hud2{position:fixed;left:0;right:0;top:0;z-index:45;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 10px;padding:10px 12px;pointer-events:none;font-family:'Barlow Condensed',sans-serif}
+    .plate{background:rgba(7,10,36,.8);border:1px solid rgba(224,168,46,.7);padding:5px 18px 5px 16px;display:flex;align-items:baseline;gap:8px;color:var(--ink);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+    .plate .lbl{font-weight:600;font-size:13px;letter-spacing:2px;color:var(--gold2)}
+    .plate b{font-weight:800;font-size:clamp(22px,5vw,30px);line-height:1;color:#fff}
+    .plate small{font-size:clamp(14px,3.4vw,18px);color:var(--mute);font-weight:600}
+    #steps{display:flex;gap:9px;align-items:center;padding:0 6px}
+    #steps i{display:block;width:clamp(11px,3vw,15px);height:clamp(11px,3vw,15px);transform:rotate(45deg);background:rgba(7,10,36,.75);border:2px solid rgba(224,168,46,.55);transition:all .3s}
+    #steps i.on{border-color:var(--gold2);box-shadow:0 0 10px rgba(246,207,106,.9);transform:rotate(45deg) scale(1.2)}
+    #steps i.ok{background:#25b15f;border-color:#8cf0b4}
+    #steps i.no{background:#d6453d;border-color:#ffb1ab}
+    @media (max-width:520px){#steps{order:3;flex:1 1 100%;justify-content:center;padding-top:2px}}
+    #hint{position:fixed;left:50%;top:clamp(96px,14vh,132px);transform:translateX(-50%);z-index:45;pointer-events:none;opacity:0;transition:opacity .4s;
+        background:rgba(7,10,36,.82);border:1px solid rgba(224,168,46,.7);padding:7px 22px;color:var(--gold2);font:700 clamp(14px,3.6vw,19px)/1.2 'Barlow Condensed',sans-serif;letter-spacing:2px;text-transform:uppercase;text-align:center;max-width:92vw;clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
     #hint.show{opacity:1}
-    #quiz{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(214,232,255,.72);backdrop-filter:blur(3px);z-index:70;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;touch-action:manipulation}
+    @media (orientation:landscape){#hint{left:3vw;top:auto;bottom:38%;transform:none;max-width:27vw;text-align:left}}
+    #quiz{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(4,6,24,.55);z-index:70;touch-action:manipulation}
     #quiz.show{display:flex}
-    .qcard{background:#fff;border:2px solid #c9d8ee;border-radius:26px;box-shadow:0 22px 60px rgba(15,39,71,.28);padding:clamp(16px,4vw,30px);width:min(680px,94vw);max-height:94vh;overflow:auto;color:#0f2747;animation:qin .35s cubic-bezier(.34,1.4,.64,1)}
-    @keyframes qin{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
-    .qmeta{display:flex;justify-content:space-between;font-size:clamp(11px,3vw,13px);font-weight:800;letter-spacing:1.5px;color:#2563eb}
-    .qtext{font-size:clamp(17px,4.6vw,25px);font-weight:800;line-height:1.3;margin:12px 0 16px}
-    .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media (max-width:560px){.opts{grid-template-columns:1fr}}
-    .qopt{display:flex;align-items:center;gap:12px;text-align:left;background:#f4f8ff;border:2px solid #c9d8ee;border-radius:40px;padding:10px 14px;font:700 clamp(14px,3.7vw,16px)/1.25 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#0f2747;cursor:pointer;transition:background .15s,border-color .15s}
-    .qopt:hover:not(:disabled){border-color:#2563eb;background:#eaf2ff}
-    .qopt i{font-style:normal;width:30px;height:30px;flex:none;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
-    .qopt.lock{background:#fff4d6;border-color:#f59e0b}.qopt.lock i{background:#f59e0b}
-    .qopt.right{background:#dcfce7;border-color:#16a34a}.qopt.right i{background:#16a34a}
-    .qopt.wrong{background:#fee2e2;border-color:#dc2626}.qopt.wrong i{background:#dc2626}
-    .qopt:disabled{cursor:default}
-    .qres{margin-top:14px;border-radius:18px;padding:12px 16px;font-size:clamp(14px,3.7vw,16px);line-height:1.45;display:none}
-    .qres.ok{display:block;background:#dcfce7;color:#14532d}.qres.no{display:block;background:#fee2e2;color:#7f1d1d}
-    #qnext{display:none;margin:14px auto 0}
-    .btn{background:linear-gradient(90deg,#2563eb,#1d4ed8);color:#fff;box-shadow:0 5px 0 #1e3a8a}
-    .loader-text{color:#2563eb}
-    #finish{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(214,232,255,.8);backdrop-filter:blur(3px);z-index:80;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+    .panel{width:min(980px,96vw);margin-bottom:max(2.5vh,env(safe-area-inset-bottom));background:linear-gradient(#0b1136,#070a24);border-top:3px solid var(--gold);box-shadow:0 -14px 50px rgba(0,0,0,.55);padding:clamp(12px,2.6vw,22px);max-height:86vh;overflow:auto;color:var(--ink);animation:rise .35s cubic-bezier(.2,.8,.2,1)}
+    @keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+    .qtop{display:flex;justify-content:space-between;font:700 clamp(13px,3vw,15px)/1 'Barlow Condensed',sans-serif;letter-spacing:3px;color:var(--gold2);margin-bottom:10px}
+    .hex{--c:22px;display:block;width:100%;border:0;padding:2px;background:var(--gold);color:var(--ink);text-align:left;clip-path:polygon(var(--c) 0,calc(100% - var(--c)) 0,100% 50%,calc(100% - var(--c)) 100%,var(--c) 100%,0 50%);cursor:pointer;font:inherit}
+    .hexin{display:flex;align-items:center;gap:12px;min-height:clamp(50px,9vw,60px);padding:8px calc(var(--c) + 8px);background:linear-gradient(#1b2470,#0e1546);clip-path:polygon(calc(var(--c) - 1px) 0,calc(100% - var(--c) + 1px) 0,100% 50%,calc(100% - var(--c) + 1px) 100%,calc(var(--c) - 1px) 100%,0 50%);transition:background .2s}
+    .hex.q{cursor:default;margin-bottom:12px}
+    .hex.q .hexin{justify-content:center;text-align:center;min-height:clamp(70px,16vw,96px)}
+    #qtext{font:700 clamp(19px,4.6vw,28px)/1.22 'Barlow',sans-serif}
+    .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+    @media (max-width:620px){.opts{grid-template-columns:1fr;gap:8px}.hex{--c:16px}}
+    .opt b{font:800 clamp(18px,4vw,22px)/1 'Barlow Condensed',sans-serif;color:var(--gold2);flex:none;letter-spacing:1px}
+    .opt span{font:500 clamp(15px,3.6vw,18px)/1.2 'Barlow',sans-serif}
+    .opt:hover:not(:disabled) .hexin{background:linear-gradient(#2a36a0,#161f66)}
+    .opt.lock .hexin{background:linear-gradient(#e98b24,#c46a0f)}
+    .opt.right .hexin{background:linear-gradient(#25b15f,#17823f)}
+    .opt.wrong .hexin{background:linear-gradient(#d6453d,#a52a24)}
+    .opt.lock b,.opt.lock span,.opt.right b,.opt.right span,.opt.wrong b,.opt.wrong span{color:#fff}
+    .opt:disabled{cursor:default}
+    .opt.pulse .hexin{animation:blink .5s 3}
+    @keyframes blink{50%{filter:brightness(1.6)}}
+    .fbk{display:none;margin-top:12px;font:500 clamp(14px,3.4vw,17px)/1.35 'Barlow',sans-serif;color:var(--mute)}
+    .fbk.show{display:block}
+    .fbk .v{font:800 clamp(18px,4vw,22px)/1 'Barlow Condensed',sans-serif;letter-spacing:2px;text-transform:uppercase;margin-right:8px}
+    .fbk .v.ok{color:#5fe39a}.fbk .v.no{color:#ff8a80}
+    .gbtn{display:none;margin:12px 0 0 auto;border:0;cursor:pointer;color:#14100a;font:800 18px/1 'Barlow Condensed',sans-serif;letter-spacing:3px;padding:13px 34px;background:linear-gradient(var(--gold2),var(--gold));clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+    .gbtn:active{filter:brightness(.9)}
+    #finish{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(4,6,24,.72);z-index:80}
     #finish.show{display:flex}
-    .fin-card{background:#fff;border:2px solid #c9d8ee;border-radius:26px;padding:30px 34px;max-width:520px;width:90vw;text-align:center;color:#0f2747;box-shadow:0 22px 60px rgba(15,39,71,.28);max-height:94vh;overflow:auto}
-    .fin-badge{display:inline-block;background:#fff4d6;border:2px solid #f59e0b;color:#92400e;border-radius:30px;padding:6px 16px;font-weight:800;font-size:14px;letter-spacing:1px}
-    .fin-card h2{font-size:clamp(28px,7vw,40px);margin:12px 0 6px;color:#2563eb}
-    .fin-card p{font-size:16px;line-height:1.5;color:#41567a;margin:8px 0}
-    .fin-cta b{color:#0f2747}.fin-mail{color:#2563eb!important;font-weight:700;margin-bottom:16px!important}
-    #brand{position:fixed;right:14px;bottom:10px;z-index:40;font:600 13px system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:rgba(255,255,255,.92);text-shadow:0 1px 3px rgba(0,0,0,.45);pointer-events:none}
+    .fin{width:min(560px,92vw);background:linear-gradient(#0b1136,#070a24);border-top:3px solid var(--gold);box-shadow:0 20px 60px rgba(0,0,0,.6);padding:26px 28px 24px;text-align:center;color:var(--ink);max-height:94vh;overflow:auto}
+    .fin .tag{font:700 14px 'Barlow Condensed',sans-serif;letter-spacing:4px;color:var(--gold2)}
+    .fin .big{font:800 clamp(64px,16vw,96px)/1 'Barlow Condensed',sans-serif;color:#fff;margin:6px 0 0}
+    .fin .big small{font-size:.38em;color:var(--mute);font-weight:600;margin-left:8px}
+    .fin .rank{display:inline-block;margin:8px 0 12px;padding:7px 24px;font:800 20px 'Barlow Condensed',sans-serif;letter-spacing:3px;color:#14100a;background:linear-gradient(var(--gold2),var(--gold));clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+    .fin p{font:500 17px/1.45 'Barlow',sans-serif;color:var(--mute);margin:8px 0}
+    .fin .cta{color:var(--ink)}.fin .mail{color:var(--gold2);font-weight:700;margin-bottom:16px}
+    .fin .gbtn{display:inline-block;margin:0}
+    #brand{position:fixed;right:14px;bottom:10px;z-index:40;font:700 13px 'Barlow Condensed',sans-serif;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.78);text-shadow:0 1px 3px rgba(0,0,0,.6);pointer-events:none}
+    .loader-text{color:var(--gold2)}
     @keyframes pulse { 50% { opacity: 0.5; } }
 </style>
 </head>
 <body>
 
+<div id="dawn"></div>
 <canvas id="world"></canvas>
 
 <!-- HUD -->
@@ -248,10 +282,10 @@
     </div>
 </div>
 
-<div id="hint">Drag the ball back, then let go. Burst a box to get a question.</div>
-<div id="score"><div class="chip">Score <b id="sc">0</b></div><div class="chip">Answered <b id="qn">0</b>/9</div></div>
-<div id="quiz" role="dialog" aria-modal="true"><div class="qcard"><div class="qmeta"><span id="qmeta"></span><span>10 POINTS</span></div><div class="qtext" id="qtext"></div><div class="opts" id="qopts"></div><div class="qres" id="qres"></div><button class="btn" id="qnext">Continue</button></div></div>
-<div id="finish"><div class="fin-card"><div class="fin-badge" id="fbadge"></div><h2 id="fscore"></h2><p id="fmsg"></p><p class="fin-cta">Want training like this built from your own policies?<br><b>Send us 1 file. We'll build you a free sample module.</b></p><p class="fin-mail">sales@keenminddesigns.com &middot; keenminddesigns.com</p><button class="btn" id="again">Play again</button></div></div>
+<div id="hint">Pull back, let go. Burst a box to get a question.</div>
+<div id="hud2"><div class="plate"><span class="lbl">SCORE</span><b id="sc">0</b></div><div id="steps"></div><div class="plate"><span class="lbl">QUESTION</span><b id="qn">0</b><small>/ 9</small></div></div>
+<div id="quiz" role="dialog" aria-modal="true"><div class="panel"><div class="qtop"><span id="qmeta"></span><span>10 POINTS</span></div><div class="hex q"><div class="hexin"><span id="qtext"></span></div></div><div class="opts" id="qopts"></div><div class="fbk" id="qres"></div><button class="gbtn" id="qnext">NEXT</button></div></div>
+<div id="finish"><div class="fin"><div class="tag">YOUR RESULT</div><div class="big"><span id="fscore"></span><small>/ 90</small></div><div class="rank" id="fbadge"></div><p id="fmsg"></p><p class="cta">Want training like this built from your own policies?<br><b>Send us 1 file. We'll build you a free sample module.</b></p><p class="mail">sales@keenminddesigns.com &middot; keenminddesigns.com</p><button class="gbtn" id="again">PLAY AGAIN</button></div></div>
 <div id="brand">keenmind designs &middot; sample demo</div>
 
 
@@ -265,6 +299,15 @@ window.GameCompleted = false;          // Set to true when all targets are recov
 const DemoUI = {
     score: 0, answered: 0, queue: [], open: false, pending: false, completed: false, locked: false,
     el: function(id) { return document.getElementById(id); },
+    steps: function() { return Array.prototype.slice.call(this.el('steps').children); },
+    initSteps: function() {
+        const st = this.el('steps'); st.innerHTML = '';
+        for (let i = 0; i < 9; i++) st.appendChild(document.createElement('i'));
+        this.markCurrent();
+    },
+    markCurrent: function() {
+        this.steps().forEach((e, i) => e.classList.toggle('on', i === this.answered));
+    },
     ask: function(part) {
         if (!part || !part.q) return;
         this.queue.push(part);
@@ -283,18 +326,19 @@ const DemoUI = {
         }
         this.open = true; this.locked = false;
         try { Game.isPaused = true; } catch (e) {}
+        this.markCurrent();
         this.el('qmeta').textContent = 'QUESTION ' + (this.answered + 1) + ' OF 9';
         this.el('qtext').textContent = part.q;
         const box = this.el('qopts'); box.innerHTML = '';
         part.o.forEach((t, i) => {
             const b = document.createElement('button');
-            b.className = 'qopt'; b.type = 'button';
-            b.innerHTML = '<i>' + 'ABCD'[i] + '</i><span></span>';
+            b.className = 'hex opt'; b.type = 'button';
+            b.innerHTML = '<div class="hexin"><b>' + 'ABCD'[i] + ':</b><span></span></div>';
             b.querySelector('span').textContent = t;
             b.addEventListener('click', () => this.pick(part, i));
             box.appendChild(b);
         });
-        const res = this.el('qres'); res.className = 'qres'; res.innerHTML = '';
+        const res = this.el('qres'); res.className = 'fbk'; res.innerHTML = '';
         this.el('qnext').style.display = 'none';
         this.el('quiz').classList.add('show');
     },
@@ -307,21 +351,24 @@ const DemoUI = {
         setTimeout(() => {
             btns[i].classList.remove('lock');
             const res = this.el('qres');
+            const step = this.steps()[this.answered];
             if (i === part.a) {
                 btns[i].classList.add('right');
                 this.score += 10; this.el('sc').textContent = this.score;
-                res.className = 'qres ok';
-                res.innerHTML = '<b>Correct! +10 points.</b><br>' + part.w;
+                if (step) step.classList.add('ok');
+                document.documentElement.style.setProperty('--lit', Math.min(1, this.score / 90).toFixed(2));
+                res.innerHTML = '<span class="v ok">Correct</span> +10 points. ' + part.w;
                 try { AudioCtrl.tone('ok'); } catch (e) {}
             } else {
-                btns[i].classList.add('wrong'); btns[part.a].classList.add('right');
-                res.className = 'qres no';
-                res.innerHTML = '<b>Not quite.</b> The right answer is ' + 'ABCD'[part.a] + ': ' + part.o[part.a] + '.<br>' + part.w;
+                btns[i].classList.add('wrong'); btns[part.a].classList.add('right', 'pulse');
+                if (step) step.classList.add('no');
+                res.innerHTML = '<span class="v no">Not quite</span> The answer is ' + 'ABCD'[part.a] + ': ' + part.o[part.a] + '. ' + part.w;
                 try { AudioCtrl.tone('bad'); } catch (e) {}
             }
+            res.className = 'fbk show';
             this.answered++; this.el('qn').textContent = this.answered;
             const nx = this.el('qnext');
-            nx.textContent = this.answered >= 9 ? 'See my score' : 'Continue';
+            nx.textContent = this.answered >= 9 ? 'SEE MY SCORE' : 'NEXT';
             nx.style.display = 'block';
         }, 700);
     },
@@ -337,13 +384,14 @@ const DemoUI = {
                   : (pct >= 0.5 ? 'A solid base. A few more habits and you are there.'
                                 : 'Every miss is a lesson. Play again and beat your score.');
         this.el('fbadge').textContent = badge;
-        this.el('fscore').textContent = this.score + ' / 90';
+        this.el('fscore').textContent = this.score;
         this.el('fmsg').textContent = msg;
         this.el('quiz').classList.remove('show');
         this.el('finish').classList.add('show');
     }
 };
 document.addEventListener('DOMContentLoaded', () => {
+    DemoUI.initSteps();
     const a = document.getElementById('again'); if (a) a.addEventListener('click', () => location.reload());
     const n = document.getElementById('qnext'); if (n) n.addEventListener('click', () => DemoUI.closeQ());
 });
@@ -1936,7 +1984,7 @@ const Game = {
         let x=this.projectile.position.x; 
         let y=this.projectile.position.y;
 
-        ctx.fillStyle='#1d4ed8';
+        ctx.fillStyle='#fff3cf'; ctx.strokeStyle='rgba(7,10,36,.85)'; ctx.lineWidth=1.6;
         const radius = 4 * this.scaleFactor;   // smaller dots
         const steps = 50;                      // bigger/longer arc
         const fadeStart = Math.floor(steps * 0.5); // start fading after 50%
@@ -1953,8 +2001,9 @@ const Game = {
                     ctx.globalAlpha = 1 - t;          // second half: fade to 0
                 }
                 ctx.beginPath(); 
-                ctx.arc(x, y, radius, 0, 6.28); 
-                ctx.fill(); 
+                ctx.arc(x, y, radius, 0, 6.28);
+                ctx.fill();
+                ctx.stroke(); 
             } 
         }
         ctx.globalAlpha = 1;
