@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Slingshot Course Builder - a keenmind designs demo</title>
+
+<!-- Matter.js Physics Engine -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<!-- Confetti Effect -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary: #FFD700; /* Gold */
+        --accent: #00E676;  /* Neon Green */
+        --glass: rgba(20, 20, 20, 0.85);
+        --border-glow: rgba(255, 215, 0, 0.6);
+    }
+
+    body {
+        margin: 0;
+        background-color: #0d1117;
+        background-image: url('Images/Game_background.jpg');
+        background-size: 100% 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        overflow: hidden;
+        font-family: 'Poppins', sans-serif;
+        user-select: none;
+        touch-action: none;
+    }
+
+    canvas {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    /* --- UI OVERLAYS --- */
+    .ui-layer {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        transition: opacity 0.3s;
+    }
+
+    /* HUD (hidden as per requirement) */
+    #hud {
+        display: none;
+    }
+    
+    .stat-badge {
+        background: rgba(0, 0, 0, 0.6);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(12px);
+        border-radius: 50px;
+        padding: 12px 40px;
+        color: white;
+        font-weight: 700;
+        font-size: 20px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        display: flex; align-items: center;
+    }
+    .highlight { color: var(--accent); margin-left: 12px; font-size: 24px; font-weight: 900; }
+
+    /* LOADING & FAIL SCREENS */
+    #loading-screen { 
+        background: #000; 
+        opacity: 1; 
+        pointer-events: auto; 
+        z-index: 100; 
+        overflow: hidden;
+    }
+    .loader-video {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #tutorial-video {
+        width: 100vw;
+        height: 100vh;
+        object-fit: contain;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .loader-text {
+        font-size: 28px; color: var(--primary); font-weight: 900; 
+        letter-spacing: 4px; animation: pulse 1s infinite;
+        position: relative;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    #fail-screen { background: rgba(50, 0, 0, 0.7); backdrop-filter: blur(4px); }
+    #fail-screen h2 {
+        font-size: 90px; color: #FF5252; margin: 0; font-weight: 900;
+        text-shadow: 5px 5px 0 #000; transform: rotate(-5deg);
+    }
+
+    .skip-video-btn {
+        display: none;
+    }
+
+    /* --- POPUP CARD DESIGN --- */
+    .menu-card {
+        background: linear-gradient(135deg, rgba(30,30,30,0.98), rgba(10,10,10,0.99));
+        border: 2px solid var(--primary);
+        box-shadow: 0 0 40px var(--border-glow);
+        border-radius: 25px;
+        padding: 30px;
+        text-align: center;
+        width: 80%;
+        max-width: 400px;
+        pointer-events: auto;
+        position: relative;
+        overflow: hidden;
+        
+        /* Animation State */
+        opacity: 0;
+        transform: scale(0.8) translateY(50px);
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .menu-card.active { opacity: 1; transform: scale(1) translateY(0); }
+
+    .menu-card h2 {
+        margin: 0; font-size: 28px; font-weight: 900; 
+        background: linear-gradient(to right, #FFD700, #FF8F00);
+        background-clip: text;
+        -webkit-background-clip: text; 
+        -webkit-text-fill-color: transparent;
+        text-transform: uppercase; letter-spacing: 2px;
+    }
+
+    #part-img {
+        width: 150px; height: 150px;
+        object-fit: contain;
+        margin: 20px auto;
+        display: block;
+        filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+    }
+
+    #part-name {
+        color: #fff; font-size: 22px; margin-bottom: 20px;
+        text-transform: uppercase; font-weight: 600;
+    }
+
+    .btn {
+        background: linear-gradient(90deg, #FFC107, #FF6F00);
+        border: none; padding: 15px 40px; color: #000;
+        font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800;
+        border-radius: 50px; cursor: pointer; text-transform: uppercase;
+        box-shadow: 0 5px 0 #E65100;
+    }
+    .btn:active { transform: translateY(5px); box-shadow: none; }
+
+    .tutorial-hint {
+        background: rgba(0, 0, 0, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        color: white;
+        font-size: 24px;
+        text-align: center;
+        pointer-events: auto;
+    }
+
+
+    #reveal{position:fixed;left:50%;bottom:6%;transform:translate(-50%,30px);opacity:0;pointer-events:none;z-index:50;
+        background:rgba(10,14,28,.92);border:2px solid #2dd4bf;border-radius:22px;padding:18px 28px;text-align:center;max-width:86vw;
+        box-shadow:0 0 40px rgba(45,212,191,.35);transition:all .35s cubic-bezier(.34,1.56,.64,1);font-family:'Poppins',sans-serif;color:#fff}
+    #reveal.show{opacity:1;transform:translate(-50%,0)}
+    .rv-tag{font-size:13px;letter-spacing:3px;color:#5eead4;font-weight:700}
+    .rv-name{font-size:34px;font-weight:900;margin:2px 0;color:#FFD700}
+    .rv-line{font-size:18px;color:#e2e8f0}
+    #finish{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(5,8,20,.82);z-index:60;font-family:'Poppins',sans-serif}
+    #finish.show{display:flex}
+    .fin-card{background:#0f172a;border:2px solid #2dd4bf;border-radius:26px;padding:34px 38px;max-width:520px;width:88vw;text-align:center;color:#fff}
+    .fin-card h2{font-size:34px;margin:0 0 10px;color:#FFD700}
+    .fin-card p{font-size:17px;line-height:1.5;color:#cbd5e1;margin:8px 0}
+    .fin-cta b{color:#fff}.fin-mail{color:#5eead4!important;font-weight:600;margin-bottom:18px!important}
+    #brand{position:fixed;right:14px;bottom:10px;z-index:40;font:600 13px 'Poppins',sans-serif;color:rgba(255,255,255,.7);pointer-events:none}
+    @keyframes pulse { 50% { opacity: 0.5; } }
+</style>
+</head>
+<body>
+
+<canvas id="world"></canvas>
+
+<!-- HUD -->
+<div id="hud">
+    <div class="stat-badge">INSIGHTS LEFT: <span class="highlight" id="targetsLeft">9</span></div>
+</div>
+
+<!-- SCREENS -->
+<div id="loading-screen" class="ui-layer">
+    <div class="loader-video">
+        <video id="tutorial-video" autoplay playsinline muted preload="auto">
+            <source src="howtogame.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="loader-text">Loading....</div>
+</div>
+<div id="fail-screen" class="ui-layer" style="display:none; opacity:0;"><h2>MISSED!</h2></div>
+
+<!-- POPUP LAYER (For Found Items) -->
+<div id="popup-screen" class="ui-layer" style="display:none;">
+    <div class="menu-card" id="info-card">
+        <h2>ITEM RECOVERED</h2>
+        <img id="part-img" src="">
+        <h3 id="part-name">Component Name</h3>
+    </div>
+</div>
+
+<!-- TUTORIAL OVERLAY -->
+<div id="tutorial-overlay" class="ui-layer" style="display:none;">
+    <div class="tutorial-hint">
+        Drag the bomb to shoot.
+    </div>
+</div>
+
+<div id="reveal" aria-live="polite"><div class="rv-tag" id="rv-count"></div><div class="rv-name" id="rv-name"></div><div class="rv-line" id="rv-line"></div></div>
+<div id="finish"><div class="fin-card"><h2>All 9 unlocked</h2><p>That's the loop behind every course we build: hook, choice, feedback, retry.</p><p class="fin-cta">Got a document or SOP sitting in a backlog?<br><b>Send us 1 file. We'll build you a free sample module.</b></p><p class="fin-mail">sales@keenminddesigns.com &middot; keenminddesigns.com</p><button class="btn" id="again">Play again</button></div></div>
+<div id="brand">keenmind designs &middot; sample demo</div>
+
+
+<script>
+// Global variables for external integrations / logic hooks
+window.isBirdTouchingBox = false;      // True when bomb is touching a box
+window.currentComponentName = "";      // Name of last successfully hit component
+window.missed = false;                 // True if last shot missed the active box
+window.GameCompleted = false;          // Set to true when all targets are recovered
+
+const DemoUI = {
+    timer: null,
+    reveal: function(part, found) {
+        if (!part) return;
+        document.getElementById('rv-count').textContent = 'INSIGHT ' + found + ' OF 9';
+        document.getElementById('rv-name').textContent = part.name;
+        document.getElementById('rv-line').textContent = part.line || '';
+        const el = document.getElementById('reveal');
+        el.classList.add('show');
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => el.classList.remove('show'), 2600);
+    },
+    finish: function() {
+        setTimeout(() => document.getElementById('finish').classList.add('show'), 1400);
+    }
+};
+document.addEventListener('DOMContentLoaded', () => {
+    const b = document.getElementById('again');
+    if (b) b.addEventListener('click', () => location.reload());
+});
+
+// --- GAME DATA ---
+const PARTS_DB = [
+    { name: "Hook", line: "Start with a problem the learner already has.", file: "Images/mystery_box2.png" },
+    { name: "Story", line: "A person and a moment beat a list of rules.", file: "Images/mystery_box2.png" },
+    { name: "Choice", line: "Make them decide before you tell them.", file: "Images/mystery_box2.png" },
+    { name: "Consequence", line: "Show what happens next, good or bad.", file: "Images/mystery_box2.png" },
+    { name: "Feedback", line: "Explain why, right after the choice.", file: "Images/mystery_box2.png" },
+    { name: "Score", line: "Track decisions, not just page views.", file: "Images/mystery_box2.png" },
+    { name: "Retry", line: "A safe second go is where learning sticks.", file: "Images/mystery_box2.png" },
+    { name: "Reward", line: "Small wins keep people playing.", file: "Images/mystery_box2.png" },
+    { name: "Recap", line: "End with the one rule to remember.", file: "Images/mystery_box2.png" }
+];
+
+const ASSETS = {
+    'bomb': 'Images/bomb.png',
+    'box': 'Images/mystery_box2.png',
+    'slingshot': 'Images/slingshot_png.png'
+};
+
+// --- AUDIO CONTROLLER (Web Audio API) ---
+const AudioCtrl = {
+    ctx: null, buffer: null,
+    init: function() {
+        try {
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!window.AudioContext) {
+                console.warn('Web Audio API not supported');
+                return;
+            }
+            this.ctx = new AudioContext();
+            
+        } catch (err) {
+            console.error('Audio initialization failed:', err);
+        }
+    },
+    loadSound: function(url) {
+        try {
+            fetch(url)
+                .then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                    return r.arrayBuffer();
+                })
+                .then(b => this.ctx.decodeAudioData(b))
+                .then(a => { this.buffer = a; })
+                .catch(err => {
+                    console.warn('Audio file loading failed:', err);
+                });
+        } catch (err) {
+            console.error('Audio loading error:', err);
+        }
+    },
+    play: function() {
+        try {
+            if (!this.ctx) return;
+            if (this.ctx.state === 'suspended') {
+                this.ctx.resume().catch(err => console.warn('Audio resume failed:', err));
+            }
+            const t = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(420, t);
+            osc.frequency.exponentialRampToValueAtTime(900, t + 0.18);
+            gain.gain.setValueAtTime(0.0001, t);
+            gain.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+            osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.start(t); osc.stop(t + 0.32);
+        } catch (err) {
+            console.warn('Audio play failed:', err);
+        }
+    }
+};
+
+const Resources = {
+    images: {},
+    videos: {},
+    loadTimeout: null,
+    load: function(cb) {
+        try {
+            let toLoad = { ...ASSETS };
+            PARTS_DB.forEach(p => toLoad[p.name] = p.file);
+            let total = Object.keys(toLoad).length;
+            let c = 0;
+            let hasCalledCallback = false;
+            
+            // Add video to loading count
+            total += 1; // for the tutorial video
+            
+            // Safety timeout: if loading takes more than 10 seconds, proceed anyway
+            this.loadTimeout = setTimeout(() => {
+                if (!hasCalledCallback) {
+                    console.warn('Resource loading timeout - proceeding with available resources');
+                    hasCalledCallback = true;
+                    if (typeof cb === 'function') cb();
+                }
+            }, 10000);
+            
+            const checkComplete = () => {
+                c++;
+                if (c >= total && !hasCalledCallback) {
+                    hasCalledCallback = true;
+                    if (this.loadTimeout) clearTimeout(this.loadTimeout);
+                    if (typeof cb === 'function') cb();
+                }
+            };
+            
+            if(total === 0) {
+                if (this.loadTimeout) clearTimeout(this.loadTimeout);
+                if (typeof cb === 'function') cb();
+                return;
+            }
+            
+            // Load images
+            for(let key in toLoad) {
+                try {
+                    const img = new Image();
+                    img.onload = checkComplete;
+                    img.onerror = () => {
+                        console.warn(`Failed to load image: ${toLoad[key]}`);
+                        checkComplete();
+                    };
+                    img.src = toLoad[key];
+                    this.images[key] = img;
+                } catch (err) {
+                    console.error(`Error loading image ${key}:`, err);
+                    checkComplete();
+                }
+            }
+            
+            // Load tutorial video
+            const video = document.getElementById('tutorial-video');
+            if (video) {
+                try {
+                    video.preload = 'auto';
+                    const videoDone = () => {
+                        checkComplete();
+                    };
+                    video.addEventListener('canplaythrough', videoDone, { once: true });
+                    video.addEventListener('error', (e) => {
+                        console.warn('Video loading error:', e);
+                        videoDone();
+                    }, { once: true });
+                    
+                    // Trigger loading by setting source if not already set
+                    if (!video.src) {
+                        const source = video.querySelector('source');
+                        if (source) {
+                            video.load(); // Force video to start loading
+                        } else {
+                            console.warn('No video source found');
+                            videoDone();
+                        }
+                    } else {
+                        video.load(); // Force video to start loading
+                    }
+                    this.videos['tutorial'] = video;
+                } catch (err) {
+                    console.error('Video setup error:', err);
+                    checkComplete();
+                }
+            } else {
+                console.warn('Video element not found');
+                checkComplete();
+            }
+        } catch (err) {
+            console.error('Resource loading error:', err);
+            if (this.loadTimeout) clearTimeout(this.loadTimeout);
+            if (typeof cb === 'function') cb();
+        }
+    }
+};
+
+const { Engine, Render, Runner, Bodies, Composite, Events, MouseConstraint, Mouse, Constraint, Body, Vector } = Matter;
+
+const Game = {
+    engine: null, world: null, runner: null,
+    canvas: null,
+    ctx: null,
+    
+    width: window.innerWidth, height: window.innerHeight, scaleFactor: 1,
+    FORCE: 0.44,          // Launch force multiplier (tuned for reach + control)
+    MAX_PULL: 805,        // Max distance you can pull the bomb from the anchor (in px, before scaling; increased by ~15%)
+    PERSPECTIVE_MIN: 0.9,
+    PERSPECTIVE_MAX: 1.05,
+    PERSPECTIVE_SQUASH: 0.92,
+    BOMB_DRAW_SCALE: 0.52,
+    SLING_ANCHOR_Y: 0.5,
+    SLING_TIE_LEFT: { x: 0.36, y: 0.36 },
+    SLING_TIE_RIGHT: { x: 0.54, y: 0.36 },
+    SLING_TARGET_BOTTOM: 213,
+    BOMB_SPEED_SCALE: 0.5,
+    BOMB_GLOW_RGB: '0,230,118',
+    BOMB_GLOW_MIN: 0.35,
+    BOMB_GLOW_MAX: 0.9,
+    BOMB_BLINK_SPEED: 1.8,
+    BOMB_ORBIT_SPEED: 1.2,
+    BOMB_ORBIT_RADIUS: 1.3,
+    BOMB_ORBIT_SIZE: 0.12,
+    BOMB_SPIN_SPEED: 3.6,
+    GROUND_Y_RATIO: 0.845,
+    GRID_BASE_HEIGHT: 80,
+    GRID_BASE_GAP: 2,
+    GRID_BASE_PAD: 20,
+
+    projectile: null, slingshot: null, mainPlatform: null, targets: [],
+    anchorBase: { x: 0, y: 0 }, currentAnchor: { x: 0, y: 0 },
+
+    targetsRemaining: 0,
+    activeTargetIndex: 0,
+    GameCompleted: false,
+    isPaused: false,
+    isFailing: false,
+    touchingCounter: 0, // Used for internal counting to calculate boolean
+    tick: 0,
+
+    mouse: null,
+    mouseConstraint: null,
+    projectileHasHit: false,
+    failCheckInterval: null,
+    isInitialized: false,
+    collisionHandlers: null,
+    inputHandlers: null,
+
+    init: function() {
+        try {
+            // Initialize canvas and context with error handling
+            this.canvas = document.getElementById('world');
+            if (!this.canvas) {
+                console.error('Canvas element not found');
+                return;
+            }
+            
+            this.ctx = this.canvas.getContext('2d');
+            if (!this.ctx) {
+                console.error('Could not get 2D context');
+                return;
+            }
+            
+            AudioCtrl.init();
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                try {
+                    const loadingScreen = document.getElementById('loading-screen');
+                    if (loadingScreen) loadingScreen.style.display = 'flex';
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        try {
+                            location.reload();
+                        } catch (err) {
+                            console.error('Reload error:', err);
+                        }
+                    }, 500);
+                } catch (err) {
+                    console.error('Resize handler error:', err);
+                }
+            });
+            
+            ['touchstart','click'].forEach(evt => {
+                window.addEventListener(evt, () => {
+                    try {
+                        if(AudioCtrl.ctx && AudioCtrl.ctx.state === 'suspended') {
+                            AudioCtrl.ctx.resume().catch(err => console.warn('Audio resume failed:', err));
+                        }
+                    } catch (err) {
+                        console.warn('Audio resume error:', err);
+                    }
+                }, {once:true});
+            });
+            
+            this.calcDimensions();
+
+            Resources.load(() => {
+                try {
+                    // Set Storyline variable after loading is completed
+                    try {
+                        var player = null;
+                        try {
+                            player = window.parent.GetPlayer();
+                        } catch (err) {
+                            // Silently fail - not in Storyline context
+                        }
+                        
+                        if (player && typeof player.SetVar === 'function') {
+                            try {
+                                player.SetVar("afterloading", true);
+                                console.log("Storyline variable 'afterloading' successfully set.");
+                            } catch (err) {
+                                console.warn("Error setting Storyline variable:", err);
+                            }
+                        }
+                    } catch (err) {
+                        console.warn("Error while setting afterloading variable:", err);
+                    }
+                    
+                    this.showTutorialVideo();
+                } catch (err) {
+                    console.error('Post-load callback error:', err);
+                    // Still try to show video
+                    try {
+                        this.showTutorialVideo();
+                    } catch (e) {
+                        console.error('Failed to show tutorial video:', e);
+                        // Fallback: start game directly
+                        this.startGame();
+                    }
+                }
+            });
+        } catch (err) {
+            console.error('Game initialization error:', err);
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.innerHTML = '<div class="loader-text">Initialization Error. Please refresh.</div>';
+            }
+        }
+    },
+
+    showTutorialVideo: function() {
+        try {
+            const videoScreen = document.getElementById('loading-screen');
+            const video = document.getElementById('tutorial-video');
+            
+            if (!videoScreen || !video) {
+                console.warn('Video elements not found, starting game directly');
+                this.startGame();
+                return;
+            }
+            
+            // Show the loader video and enable pointer events immediately
+            videoScreen.style.display = 'flex';
+            videoScreen.style.pointerEvents = 'auto';
+            
+            // Hide loading text once video starts playing
+            const loaderText = videoScreen.querySelector('.loader-text');
+            video.addEventListener('playing', () => {
+                if (loaderText) {
+                    loaderText.style.display = 'none';
+                }
+            }, { once: true });
+            
+            // Reset video to beginning if it already ended
+            if (video.ended) {
+                video.currentTime = 0;
+            }
+            
+            // Safety timeout: if video doesn't end in 60 seconds, start game anyway
+            const videoTimeout = setTimeout(() => {
+                console.warn('Video timeout - starting game');
+                if (videoScreen) videoScreen.style.display = 'none';
+                this.startGame();
+            }, 60000); // 60 seconds
+            
+            // Start the game when video ends - instant transition
+            video.addEventListener('ended', () => {
+                clearTimeout(videoTimeout);
+                try {
+                    // Hide video screen immediately for seamless transition
+                    if (videoScreen) {
+                        videoScreen.style.display = 'none';
+                    }
+                    this.startGame();
+                } catch (err) {
+                    console.error('Error starting game after video:', err);
+                }
+            }, { once: true });
+            
+            // Handle video errors - instant transition
+            video.addEventListener('error', (e) => {
+                clearTimeout(videoTimeout);
+                console.warn('Video playback error:', e);
+                // Hide video screen immediately and start game
+                if (videoScreen) {
+                    videoScreen.style.display = 'none';
+                }
+                try {
+                    this.startGame();
+                } catch (err) {
+                    console.error('Error starting game after video error:', err);
+                }
+            }, { once: true });
+            
+            // Ensure video plays (muted for autoplay compatibility)
+            video.muted = true;
+            video.play().catch(err => {
+                console.warn('Video autoplay prevented:', err);
+                // If it doesn't play within 3 seconds, start game
+                setTimeout(() => {
+                    if (video.paused) {
+                        console.warn('Video still paused after 3s, starting game');
+                        clearTimeout(videoTimeout);
+                        if (videoScreen) videoScreen.style.display = 'none';
+                        this.startGame();
+                    }
+                }, 3000);
+            });
+        } catch (err) {
+            console.error('Error showing tutorial video:', err);
+            // Fallback: start game directly
+            try {
+                this.startGame();
+            } catch (e) {
+                console.error('Failed to start game:', e);
+            }
+        }
+    },
+
+    skipTutorialVideo: function() {
+        try {
+            const video = document.getElementById('tutorial-video');
+            if (video) {
+                video.pause().catch(err => console.warn('Video pause error:', err));
+            }
+            this.startGame();
+        } catch (err) {
+            console.error('Error skipping video:', err);
+            this.startGame();
+        }
+    },
+
+    startGame: function() {
+        try {
+            if (this.isInitialized) {
+                console.warn('Game already initialized');
+                return;
+            }
+            
+            // Hide loading screen
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                try {
+                    loadingScreen.style.display = 'none';
+                } catch (err) {
+                    console.warn('Error hiding loading screen:', err);
+                }
+            }
+            
+            // Check if Matter.js is available
+            if (typeof Matter === 'undefined' || !Matter.Engine) {
+                console.error('Matter.js not loaded');
+                return;
+            }
+            
+            // Initialize the game engine
+            try {
+                this.engine = Engine.create({ enableSleeping: true });
+                if (!this.engine) {
+                    throw new Error('Failed to create engine');
+                }
+                this.engine.gravity.y = 1.6;
+                this.world = this.engine.world;
+                this.runner = Runner.create();
+                
+                this.setupLevel();
+                this.setupInputs();
+                this.setupCollisions();
+                
+                Runner.run(this.runner, this.engine);
+                this.isInitialized = true;
+                this.loop();
+            } catch (err) {
+                console.error('Game engine initialization error:', err);
+                throw err;
+            }
+        } catch (err) {
+            console.error('Error starting game:', err);
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.innerHTML = '<div class="loader-text">Game initialization failed. Please refresh.</div>';
+                loadingScreen.style.display = 'flex';
+            }
+        }
+    },
+
+    calcDimensions: function() {
+        try {
+            this.width = window.innerWidth || 1400;
+            this.height = window.innerHeight || 750;
+            
+            if (!this.canvas || !this.ctx) {
+                console.error('Canvas not initialized');
+                return;
+            }
+            
+            this.canvas.width = this.width;
+            this.canvas.height = this.height;
+            this.scaleFactor = Math.min(this.width / 1400, this.height / 750);
+            if(this.scaleFactor < 0.5) this.scaleFactor = 0.5;
+            if(isNaN(this.scaleFactor) || this.scaleFactor <= 0) this.scaleFactor = 1;
+            
+            this.anchorBase.x = (this.width * 0.18) - 20;
+            this.anchorBase.y = this.height * 0.80;
+            this.currentAnchor = { ...this.anchorBase };
+        } catch (err) {
+            console.error('Error calculating dimensions:', err);
+            // Set defaults
+            this.width = 1400;
+            this.height = 750;
+            this.scaleFactor = 1;
+            this.anchorBase.x = 232;
+            this.anchorBase.y = 600;
+            this.currentAnchor = { ...this.anchorBase };
+        }
+    },
+    getPerspectiveScale: function(y) {
+        const h = this.height || 750;
+        const t = Math.min(Math.max(y / h, 0), 1);
+        return this.PERSPECTIVE_MIN + (this.PERSPECTIVE_MAX - this.PERSPECTIVE_MIN) * t;
+    },
+    getSlingMetrics: function() {
+        const s = this.scaleFactor || 1;
+        const sx = this.currentAnchor.x;
+        const sy = this.currentAnchor.y;
+        const perspective = this.getPerspectiveScale(sy);
+        let tieLeft = { x: sx - 28*s, y: sy - 40*s };
+        let tieRight = { x: sx + 28*s, y: sy - 40*s };
+        let imgW = 0;
+        let imgH = 0;
+        let anchorX = 0;
+        let anchorY = 0;
+        let scaleX = 0;
+        let scaleY = 0;
+        const slingImg = Resources.images['slingshot'];
+        const hasSlingImg = slingImg && slingImg.complete && slingImg.naturalWidth > 0 && slingImg.naturalHeight > 0;
+
+        if (hasSlingImg) {
+            imgW = slingImg.naturalWidth;
+            imgH = slingImg.naturalHeight;
+            anchorX = imgW * 0.5;
+            anchorY = imgH * this.SLING_ANCHOR_Y;
+            const bottomToAnchor = imgH - anchorY;
+            const targetBottom = this.SLING_TARGET_BOTTOM * s;
+            const scale = targetBottom / bottomToAnchor;
+            scaleX = scale * perspective;
+            scaleY = scale * perspective * this.PERSPECTIVE_SQUASH;
+            const tieLeftX = imgW * this.SLING_TIE_LEFT.x;
+            const tieLeftY = imgH * this.SLING_TIE_LEFT.y;
+            const tieRightX = imgW * this.SLING_TIE_RIGHT.x;
+            const tieRightY = imgH * this.SLING_TIE_RIGHT.y;
+            tieLeft = {
+                x: sx + (tieLeftX - anchorX) * scaleX,
+                y: sy + (tieLeftY - anchorY) * scaleY
+            };
+            tieRight = {
+                x: sx + (tieRightX - anchorX) * scaleX,
+                y: sy + (tieRightY - anchorY) * scaleY
+            };
+        }
+
+        const tieMid = {
+            x: (tieLeft.x + tieRight.x) / 2,
+            y: (tieLeft.y + tieRight.y) / 2
+        };
+
+        return { tieLeft, tieRight, tieMid, hasSlingImg, slingImg, imgW, imgH, anchorX, anchorY, scaleX, scaleY };
+    },
+
+    setupLevel: function() {
+        try {
+            if (!this.world || !Composite || !Bodies) {
+                throw new Error('Physics engine not initialized');
+            }
+            
+            Composite.clear(this.world);
+            this.targets = [];
+            const w = this.width || 1400; 
+            const h = this.height || 750;
+
+            // Optional floor below the screen; no side/ceiling walls so the projectile can freely leave
+            try {
+                Composite.add(this.world, [
+                    Bodies.rectangle(w/2, h + 100, w*4, 200, { isStatic: true }) // floor
+                ]);
+            } catch (err) {
+                console.error('Error creating floor:', err);
+            }
+
+            // Smart deterministic layout: non-overlapping grid on right side
+            const s = this.scaleFactor || 1;
+            // Make targets larger and keep some breathing room between them
+            const size = 80 * 2.6 * s * 0.95;
+            const spacing = size * 1.2;
+
+            // Fixed to 3 columns
+            const cols = 3;
+            const rows = Math.ceil(PARTS_DB.length / cols);
+
+            // Center of the grid on the right side
+            const gridWidth = (cols - 1) * spacing;
+            const gridHeight = (rows - 1) * spacing;
+            const originX = w * 0.7 - gridWidth / 2;
+            // Place the grid so it sits on the base near the ground line
+            const baseHeight = this.GRID_BASE_HEIGHT * s;
+            const basePad = this.GRID_BASE_PAD * s;
+            let baseTop = Math.min(h * this.GROUND_Y_RATIO, h - baseHeight);
+            let gridBottomTarget = baseTop - (this.GRID_BASE_GAP * s);
+            let originY = gridBottomTarget - (rows - 1) * spacing - size / 2;
+            const minOriginY = (size / 2) + 10 * s;
+            if (originY < minOriginY) {
+                originY = minOriginY;
+                gridBottomTarget = originY + (rows - 1) * spacing + size / 2;
+                baseTop = Math.min(gridBottomTarget + (this.GRID_BASE_GAP * s), h - baseHeight);
+            }
+
+            const baseWidth = gridWidth + size + basePad;
+            const baseX = originX + gridWidth / 2;
+            const baseY = baseTop + baseHeight / 2;
+            try {
+                const base = Bodies.rectangle(baseX, baseY, baseWidth, baseHeight, {
+                    isStatic: true,
+                    label: 'grid-base'
+                });
+                Composite.add(this.world, base);
+            } catch (err) {
+                console.warn('Error creating grid base:', err);
+            }
+
+            PARTS_DB.forEach((part, i) => {
+                try {
+                    const col = i % cols;
+                    const row = Math.floor(i / cols);
+                    const x = originX + col * spacing;
+                    const y = originY + row * spacing;
+
+                    const t = Bodies.rectangle(
+                        x,
+                        y,
+                        size,
+                        size,
+                        { density: 0.004, friction: 0.6, restitution: 0.3, label: 'target' }
+                    );
+                    if (t) {
+                        t.partData = part;
+                        this.targets.push(t);
+                        Composite.add(this.world, t);
+                    }
+                } catch (err) {
+                    console.error(`Error creating target ${i}:`, err);
+                }
+            });
+
+            this.targetsRemaining = this.targets.length;
+            this.activeTargetIndex = 0;
+            this.updateActiveTargetState();
+            this.updateHUD();
+            this.createProjectile();
+        } catch (err) {
+            console.error('Error setting up level:', err);
+            throw err;
+        }
+    },
+
+    updateActiveTargetState: function() {
+        // Allow all targets to be dynamic so any box can be hit at any time
+        this.targets.forEach((t) => {
+            Body.setStatic(t, false);
+            t.renderActive = false;
+        });
+    },
+
+    createProjectile: function() {
+        try {
+            if (!this.world || !Composite || !Bodies || !Constraint) {
+                throw new Error('Physics engine not initialized');
+            }
+            
+            if(this.projectile) {
+                try {
+                    Composite.remove(this.world, this.projectile);
+                } catch (err) {
+                    console.warn('Error removing projectile:', err);
+                }
+            }
+            if(this.slingshot) {
+                try {
+                    Composite.remove(this.world, this.slingshot);
+                } catch (err) {
+                    console.warn('Error removing slingshot:', err);
+                }
+            }
+            
+            // New attempt starts, reset missed flag
+            window.missed = false;
+            // Bigger bomb for clearer visuals and collisions
+            const r = 35 * (this.scaleFactor || 1);
+            const slingPoint = this.getSlingMetrics().tieMid;
+            const anchorX = slingPoint?.x || this.currentAnchor?.x || this.anchorBase?.x || 210;
+            const anchorY = slingPoint?.y || this.currentAnchor?.y || this.anchorBase?.y || 600;
+            
+            this.projectile = Bodies.circle(anchorX, anchorY, r, {
+                density: 0.1, restitution: 0.5, friction: 0.4, label: 'bomb',
+                collisionFilter: { category: 0x0002 } 
+            });
+            
+            if (!this.projectile) {
+                throw new Error('Failed to create projectile');
+            }
+            
+            this.slingshot = Constraint.create({
+                pointA: slingPoint || this.currentAnchor || this.anchorBase, 
+                bodyB: this.projectile, 
+                stiffness: 0.04, 
+                length: 15
+            });
+            
+            if (!this.slingshot) {
+                throw new Error('Failed to create slingshot');
+            }
+            
+            Composite.add(this.world, [this.projectile, this.slingshot]);
+            // Reset per-shot hit flag so this new projectile can hit once
+            this.projectileHasHit = false;
+        } catch (err) {
+            console.error('Error creating projectile:', err);
+            // Try to recover
+            try {
+                window.missed = false;
+                this.projectileHasHit = false;
+            } catch (e) {
+                console.error('Recovery failed:', e);
+            }
+        }
+    },
+
+    setupInputs: function() {
+        try {
+            if (!this.canvas || !this.engine || !this.world) {
+                throw new Error('Required components not initialized');
+            }
+            
+            // Single shared mouse for better control & trajectory display
+            this.mouse = Mouse.create(this.canvas);
+            if (!this.mouse) {
+                throw new Error('Failed to create mouse');
+            }
+            
+            this.mouseConstraint = MouseConstraint.create(this.engine, {
+                mouse: this.mouse,
+                constraint: { render: { visible: false } },
+                collisionFilter: { mask: 0x0002 }
+            });
+            
+            if (!this.mouseConstraint) {
+                throw new Error('Failed to create mouse constraint');
+            }
+            
+            try {
+                if (this.mouseConstraint.mouse && this.mouseConstraint.mouse.element && this.mouseConstraint.mouse.mousewheel) {
+                    this.mouseConstraint.mouse.element.removeEventListener("mousewheel", this.mouseConstraint.mouse.mousewheel);
+                }
+            } catch (err) {
+                console.warn('Error removing mousewheel listener:', err);
+            }
+            
+            Composite.add(this.world, this.mouseConstraint);
+            
+            Events.on(this.mouseConstraint, 'startdrag', (e) => {
+                try {
+                    if(AudioCtrl.ctx && AudioCtrl.ctx.state === 'suspended') {
+                        AudioCtrl.ctx.resume().catch(err => console.warn('Audio resume failed:', err));
+                    }
+                    if (!e.body || e.body.label !== 'bomb') {
+                        if (e.source) e.source.body = null;
+                    }
+                } catch (err) {
+                    console.warn('Error in startdrag:', err);
+                }
+            });
+            
+            Events.on(this.mouseConstraint, 'enddrag', (e) => {
+                try {
+                    if(e.body === this.projectile && this.projectile && this.projectile.position) {
+                        const slingPoint = this.getSlingMetrics().tieMid;
+                        const delta = Vector.sub(slingPoint || this.currentAnchor || this.anchorBase, this.projectile.position);
+                        const launchForce = this.FORCE * this.BOMB_SPEED_SCALE;
+                        Body.setVelocity(this.projectile, Vector.mult(delta, launchForce));
+                        if (this.slingshot) this.slingshot.bodyB = null;
+                        setTimeout(() => {
+                            try {
+                                this.checkFailCondition();
+                            } catch (err) {
+                                console.error('Error in checkFailCondition:', err);
+                            }
+                        }, 300);
+                    }
+                } catch (err) {
+                    console.error('Error in enddrag:', err);
+                }
+            });
+        } catch (err) {
+            console.error('Error setting up inputs:', err);
+            throw err;
+        }
+    },
+
+    setupCollisions: function() {
+        Events.on(this.engine, 'collisionStart', (e) => {
+            e.pairs.forEach(p => {
+                const A = p.bodyA; const B = p.bodyB;
+                const isTarget = (A.label === 'target' || B.label === 'target');
+                const isBomb = (A.label === 'bomb' || B.label === 'bomb');
+                
+                // TRACK CONTACT LOGIC (Now considers any target)
+                if(isBomb && isTarget) {
+                    const t = A.label === 'target' ? A : B;
+                    const b = A.label === 'bomb' ? A : B;
+
+                    this.touchingCounter++;
+                    window.isBirdTouchingBox = true;
+
+                    if(!t.isDestroyed) {
+                        const impact = Vector.magnitude(Vector.sub(t.velocity, b.velocity));
+                        if(impact > 2.5) {
+                            // Only allow a single successful hit per launched projectile
+                            if (this.projectileHasHit) return;
+                            this.projectileHasHit = true;
+                            t.isDestroyed = true;
+                            this.destroyTarget(t);
+
+                            // Stop bomb so it cannot go on to hit any other boxes in this attempt
+                            Body.setVelocity(b, { x: 0, y: 0 });
+                            Body.setAngularVelocity(b, 0);
+                        }
+                    }
+                }
+            });
+        });
+
+        // CONTACT END LOGIC – only for active target
+        Events.on(this.engine, 'collisionEnd', (e) => {
+             e.pairs.forEach(p => {
+                const A = p.bodyA; const B = p.bodyB;
+                const isTarget = (A.label === 'target' || B.label === 'target');
+                const isBomb = (A.label === 'bomb' || B.label === 'bomb');
+                
+                if (isBomb && isTarget) {
+                    const t = A.label === 'target' ? A : B;
+
+                    this.touchingCounter--;
+                    if (this.touchingCounter <= 0) {
+                        this.touchingCounter = 0;
+                        window.isBirdTouchingBox = false;
+                    }
+                }
+            });
+        });
+    },
+
+    checkFailCondition: function() {
+        // Clear any existing interval
+        if (this.failCheckInterval) {
+            clearInterval(this.failCheckInterval);
+            this.failCheckInterval = null;
+        }
+        
+        let checkCount = 0;
+        const maxChecks = 120; // Maximum 30 seconds (120 * 250ms)
+        
+        this.failCheckInterval = setInterval(() => {
+            try {
+                checkCount++;
+                
+                // Safety: prevent infinite loops
+                if (checkCount > maxChecks) {
+                    clearInterval(this.failCheckInterval);
+                    this.failCheckInterval = null;
+                    console.warn('Fail check timeout');
+                    return;
+                }
+                
+                if (this.isPaused || (this.slingshot && this.slingshot.bodyB)) { 
+                    clearInterval(this.failCheckInterval);
+                    this.failCheckInterval = null;
+                    return; 
+                }
+                
+                if (this.GameCompleted) {
+                    clearInterval(this.failCheckInterval);
+                    this.failCheckInterval = null;
+                    return;
+                }
+                
+                if (!this.projectile) {
+                    clearInterval(this.failCheckInterval);
+                    this.failCheckInterval = null;
+                    return;
+                }
+                
+                const b = this.projectile;
+                if (!b.position) {
+                    clearInterval(this.failCheckInterval);
+                    this.failCheckInterval = null;
+                    return;
+                }
+                
+                const gone = b.position.x > this.width + 50 || b.position.y > this.height + 50 || b.position.x < -50;
+                const slow = Vector.magnitude(b.velocity) < 0.2 && b.angularSpeed < 0.1;
+                
+                if (gone || slow) {
+                    clearInterval(this.failCheckInterval);
+                    this.failCheckInterval = null;
+                    this.fail();
+                }
+            } catch (err) {
+                console.error('Error in fail check:', err);
+                clearInterval(this.failCheckInterval);
+                this.failCheckInterval = null;
+            }
+        }, 250);
+    },
+
+    fail: function() {
+        try {
+            // If the game has completed, ignore miss/hit handling
+            if (this.GameCompleted) return;
+            
+            // Mark last attempt as missed and simply reload the projectile
+            if(this.targets && Array.isArray(this.targets) && this.targets.some(t => !t.isDestroyed && t.velocity && Math.abs(t.velocity.y) > 0.5)) {
+                return;
+            }
+            
+            if(this.isFailing) return;
+            this.isFailing = true;
+            window.missed = true;
+            
+            // Simple alert when miss variable updates
+            console.log('Missed! Try again.');
+
+            var player;
+            try {
+                player = window.parent.GetPlayer();
+            } catch (err) {
+                // Not in Storyline context - this is fine
+            }
+
+            if (player && typeof player.SetVar === 'function') {
+                try {
+                    player.SetVar("missedit", true);
+                    console.log("Storyline variable 'missedit' successfully set.");
+                } catch (err) {
+                    console.warn("Error setting Storyline variable:", err);
+                }
+            }
+
+            // Optional: brief flash of the "MISSED" screen for feedback
+            const scr = document.getElementById('fail-screen');
+            if (scr) {
+                scr.style.display = 'flex';
+                requestAnimationFrame(() => {
+                    try {
+                        scr.style.opacity = '1';
+                    } catch (err) {
+                        console.warn('Error setting fail screen opacity:', err);
+                    }
+                });
+                
+                setTimeout(() => {
+                    try {
+                        scr.style.opacity = '0';
+                        setTimeout(() => { 
+                            try {
+                                scr.style.display = 'none';
+                                this.isFailing = false;
+                                this.createProjectile();
+                            } catch (err) {
+                                console.error('Error resetting after fail:', err);
+                                this.isFailing = false;
+                            }
+                        }, 150);
+                    } catch (err) {
+                        console.error('Error in fail timeout:', err);
+                        this.isFailing = false;
+                        this.createProjectile();
+                    }
+                }, 400);
+            } else {
+                // If fail screen doesn't exist, just reset
+                this.isFailing = false;
+                this.createProjectile();
+            }
+        } catch (err) {
+            console.error('Error in fail function:', err);
+            // Try to recover
+            try {
+                this.isFailing = false;
+                this.createProjectile();
+            } catch (e) {
+                console.error('Recovery failed:', e);
+            }
+        }
+    },
+
+    destroyTarget: function(body) {
+        try {
+            if (!body) {
+                console.warn('destroyTarget called with null body');
+                return;
+            }
+            
+            // Mark this shot as consumed so no further targets are counted for this projectile
+            this.projectileHasHit = true;
+            
+            try {
+                AudioCtrl.play();
+            } catch (err) {
+                console.warn('Audio play error:', err);
+            }
+            
+            body.isDestroyed = true;
+            
+            // Update "last hit" global variables
+            window.currentComponentName = body.partData ? body.partData.name : "";
+            window.missed = false;
+            
+            // Simple alert when component variable updates
+            if (window.currentComponentName) {
+                console.log('Hit: ' + window.currentComponentName);
+            }
+
+            // Attempt to set the parent Storyline variable 'partName' to the current component name
+            try {
+                var _player = null;
+                try { 
+                    _player = window.parent.GetPlayer(); 
+                } catch (err) { 
+                    // Not in Storyline context - this is fine
+                }
+                
+                if (_player && typeof _player.SetVar === 'function') {
+                    // Delay passing the part name to the parent by a short amount
+                    // This allows any animations/UI updates to complete first.
+                    try {
+                    setTimeout(() => {
+                        try {
+                            if (_player && typeof _player.SetVar === 'function') {
+                                _player.SetVar('partName', window.currentComponentName);
+                            }
+                        } catch (err) {
+                            console.warn('Could not set parent variable partName (delayed):', err);
+                        }
+                    }, 500); // Reduced delay for faster response
+                    } catch (err) {
+                        console.warn('Could not schedule delayed partName update:', err);
+                    }
+                }
+            } catch (err) { 
+                console.warn('Error while notifying parent of partName:', err); 
+            }
+            
+            // Compute a safe on-screen position for the confetti blast. Some bodies
+            // may be off-screen or have unstable positions when destroyed; clamp
+            // to viewport bounds and provide a sensible fallback.
+            const pos = (body && body.position) ? { x: body.position.x, y: body.position.y } : { x: (this.width || 1400)/2, y: (this.height || 750)/2 };
+            // Clamp to within visible padding so confetti is not clipped at edges
+            const pad = 20;
+            const w = this.width || 1400;
+            const h = this.height || 750;
+            pos.x = Math.min(Math.max(pos.x, pad), w - pad);
+            pos.y = Math.min(Math.max(pos.y, pad), h - pad);
+            const px = Math.min(Math.max(pos.x / w, 0.05), 0.95);
+            const py = Math.min(Math.max(pos.y / h, 0.05), 0.95);
+            
+            try { DemoUI.reveal(body.partData, 9 - ((this.targetsRemaining || 1) - 1)); } catch (e) {}
+            // Single confetti burst (lighter performance)
+            try {
+                if (typeof confetti === 'function') {
+                    confetti({
+                        origin: { x: px, y: py },
+                        colors: ['#00E676', '#B7FF76', '#FFD700', '#00C6FF'],
+                        spread: 90,
+                        particleCount: 120,
+                        startVelocity: 35,
+                        scalar: 1.1,
+                        ticks: 180
+                    });
+                }
+            } catch (err) {
+                console.warn('Confetti error:', err);
+            }
+            
+            try {
+                if (this.world && Composite) {
+                    Composite.remove(this.world, body);
+                }
+            } catch (err) {
+                console.warn('Error removing body from world:', err);
+            }
+            
+            this.targetsRemaining = Math.max((this.targetsRemaining || 0) - 1, 0);
+            this.updateHUD();
+
+            if(this.targetsRemaining <= 0) {
+                // Signal completion via flag instead of showing UI
+                this.GameCompleted = true;
+                try { 
+                    window.GameCompleted = true; 
+                } catch(e) {
+                    console.warn('Error setting global GameCompleted:', e);
+                }
+                
+                // Show completion alert once
+                try { DemoUI.finish(); } catch (e) {}
+                
+                // Attempt to notify parent (e.g., Storyline) if available
+                try {
+                    var player = null;
+                    try { 
+                        player = window.parent.GetPlayer(); 
+                    } catch (err) { 
+                        // Not in Storyline context
+                    }
+                    
+                    if (player && typeof player.SetVar === 'function') {
+                        try { 
+                            player.SetVar('gameCompleted', true); 
+                        } catch (err) { 
+                            console.warn('Could not set parent gameCompleted var:', err); 
+                        }
+                    }
+                } catch (err) { 
+                    console.warn('Error notifying parent of completion:', err); 
+                }
+            } else if(this.slingshot && this.slingshot.bodyB === null) {
+                this.createProjectile(); // reload for next component
+            }
+        } catch (err) {
+            console.error('Error destroying target:', err);
+            // Try to recover
+            try {
+                this.targetsRemaining = Math.max((this.targetsRemaining || 0) - 1, 0);
+                this.updateHUD();
+            } catch (e) {
+                console.error('Recovery failed:', e);
+            }
+        }
+    },
+
+    updateHUD: function() {
+        try {
+            const hudElement = document.getElementById('targetsLeft');
+            if (hudElement) {
+                hudElement.innerText = this.targetsRemaining;
+            }
+        } catch (err) {
+            console.warn('Error updating HUD:', err);
+        }
+    },
+
+    animationFrameId: null,
+    loop: function() {
+        try {
+            if (!this.isInitialized || !this.ctx || !this.world) {
+                this.animationFrameId = null;
+                return; // Don't continue if not initialized
+            }
+            
+            this.animationFrameId = requestAnimationFrame(() => this.loop());
+            
+            // Keep anchor static (no floating animation)
+            this.currentAnchor.y = this.anchorBase.y;
+            const slingMetrics = this.getSlingMetrics();
+            const slingPoint = slingMetrics.tieMid;
+            if(this.slingshot && this.slingshot.bodyB) {
+                this.slingshot.pointA = slingPoint;
+            }
+
+            const isDraggingBomb = Boolean(
+                this.slingshot &&
+                this.slingshot.bodyB &&
+                this.mouseConstraint &&
+                this.mouseConstraint.body === this.projectile &&
+                this.projectile
+            );
+
+            if(isDraggingBomb && this.projectile && this.projectile.position) {
+                try {
+                    // Clamp how far the bomb can be pulled from the anchor for better aiming
+                    const d = Vector.sub(this.projectile.position, slingPoint);
+                    const dist = Vector.magnitude(d);
+                    const max = this.MAX_PULL * this.scaleFactor;
+
+                    if (dist > max) {
+                        const dir = Vector.normalise(d);
+                        const clampedPos = {
+                            x: slingPoint.x + dir.x * max,
+                            y: slingPoint.y + dir.y * max
+                        };
+                        Body.setPosition(this.projectile, clampedPos);
+                    }
+
+                    // Prevent pulling the bomb in front of the anchor (only pull backwards)
+                    if (this.projectile.position.x > slingPoint.x) {
+                        Body.setPosition(this.projectile, {
+                            x: slingPoint.x,
+                            y: this.projectile.position.y
+                        });
+                    }
+                } catch (err) {
+                    console.warn('Error in drag handling:', err);
+                }
+            }
+
+            if (this.targets && Array.isArray(this.targets)) {
+                this.targets.forEach(t => {
+                    try {
+                        if(!t.isDestroyed && t.position) {
+                            if (t.position.x > this.width+50 || t.position.y > this.height+100 || t.position.x < -100) {
+                                t.isDestroyed = true;
+                                this.destroyTarget(t);
+                            }
+                        }
+                    } catch (err) {
+                        console.warn('Error checking target:', err);
+                    }
+                });
+            }
+
+            const ctx = this.ctx;
+            if (!ctx) return;
+            
+            ctx.clearRect(0, 0, this.width, this.height);
+            
+            try {
+                this.drawSling(false);
+                
+                if (this.world && Composite.allBodies) {
+                    const bodies = Composite.allBodies(this.world);
+                    const margin = 100; // Only draw objects within viewport + margin
+                    for (let i = 0; i < bodies.length; i++) {
+                        const b = bodies[i];
+                        try {
+                            // Skip drawing off-screen objects for performance
+                            if (b.position && (b.position.x < -margin || b.position.x > this.width + margin || 
+                                b.position.y < -margin || b.position.y > this.height + margin)) {
+                                continue;
+                            }
+                            if(b.label === 'target') this.drawBox(b);
+                            else if(b.label === 'bomb') this.drawBomb(b);
+                            else if(b.label === 'grid-base') this.drawGridBase(b);
+                            else if(b.label === 'block') this.drawBlock(b);
+                        } catch (err) {
+                            console.warn('Error drawing body:', err);
+                        }
+                    }
+                }
+                
+                // Show trajectory only while actively dragging the bomb
+                if(isDraggingBomb) this.drawTraj();
+                this.drawSling(true);
+            } catch (err) {
+                console.error('Error in drawing loop:', err);
+            }
+        } catch (err) {
+            console.error('Error in main loop:', err);
+            // Continue loop even on error to prevent complete freeze
+            try {
+                this.animationFrameId = requestAnimationFrame(() => this.loop());
+            } catch (e) {
+                console.error('Failed to continue loop:', e);
+                this.animationFrameId = null;
+            }
+        }
+    },
+
+    drawSlingBase: function() {
+        const ctx=this.ctx; const s=this.scaleFactor;
+        const x=this.currentAnchor.x; const y=this.currentAnchor.y+(95*s); 
+        ctx.save(); ctx.translate(x, y);
+        var g = ctx.createLinearGradient(0,0,0,15*s*3);
+        g.addColorStop(0,'rgba(0,230,118,0.6)'); g.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(-30*s,15*s); ctx.lineTo(30*s,15*s); ctx.lineTo(0,60*s); ctx.fill();
+        ctx.fillStyle='#222'; ctx.shadowBlur=15; ctx.shadowColor='#00E676';
+        ctx.beginPath(); ctx.roundRect(-60*s,-7*s,120*s,15*s,6); ctx.fill();
+        ctx.fillStyle='#00E676'; ctx.shadowBlur=0; ctx.fillRect(-50*s,-3*s,100*s,3);
+        ctx.restore();
+    },
+    drawHoverboard: function(b) {
+        const ctx=this.ctx; const w=b.bounds.max.x-b.bounds.min.x; const h=b.bounds.max.y-b.bounds.min.y;
+        ctx.save(); ctx.translate(b.position.x, b.position.y);
+        ctx.fillStyle='#222'; ctx.shadowBlur=25; ctx.shadowColor='#00E676'; 
+        ctx.beginPath(); ctx.roundRect(-w/2, -h/2, w, h, 8); ctx.fill();
+        ctx.fillStyle='#00E676'; ctx.fillRect(-w/2+20, -2, w-40, 4);
+        ctx.globalCompositeOperation='destination-over';
+        var g=ctx.createLinearGradient(0, h/2, 0, h*2);
+        g.addColorStop(0,'rgba(0,230,118,0.4)'); g.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=g; ctx.fillRect(-w/3, h/2, w/1.5, h*2);
+        ctx.restore();
+    },
+    drawBox: function(b) {
+        try {
+            if (!b || !b.position || !b.bounds) return;
+            
+            const ctx = this.ctx;
+            if (!ctx) return;
+            
+            const w = b.bounds.max.x - b.bounds.min.x;
+            if (isNaN(w) || w <= 0) return;
+            
+            const perspective = this.getPerspectiveScale(b.position.y);
+            
+            ctx.save(); 
+            ctx.translate(b.position.x, b.position.y);
+            ctx.scale(perspective, perspective * this.PERSPECTIVE_SQUASH);
+            ctx.rotate(b.angle || 0);
+
+            // No visual highlighting of any single box
+            ctx.shadowBlur = 0;
+
+            const img = Resources.images['box'];
+            if (img && img.complete) {
+                try {
+                    const iw = img.naturalWidth || img.width;
+                    const ih = img.naturalHeight || img.height;
+                    if (iw && ih) {
+                        // Preserve aspect ratio: scale uniformly so the larger side fits the physics box
+                        const scale = w / Math.max(iw, ih);
+                        const dw = iw * scale;
+                        const dh = ih * scale;
+                        ctx.drawImage(img, -dw/2, -dh/2, dw, dh);
+                    } else {
+                        ctx.drawImage(img, -w/2, -w/2, w, w);
+                    }
+                } catch (err) {
+                    console.warn('Error drawing box image:', err);
+                }
+            }
+            ctx.restore();
+        } catch (err) {
+            console.warn('Error in drawBox:', err);
+        }
+    },
+    drawBomb: function(b) {
+        try {
+            if (!b || !b.position) return;
+            
+            const ctx = this.ctx;
+            if (!ctx) return;
+            
+            const r = b.circleRadius;
+            if (!r || isNaN(r) || r <= 0) return;
+            const perspective = this.getPerspectiveScale(b.position.y);
+            const drawR = r * this.BOMB_DRAW_SCALE;
+            const time = performance.now() * 0.001;
+            const blink = 0.5 + 0.5 * Math.sin(time * this.BOMB_BLINK_SPEED);
+            const glowAlpha = this.BOMB_GLOW_MIN + (this.BOMB_GLOW_MAX - this.BOMB_GLOW_MIN) * blink;
+            const glowRadius = drawR * (1.35 + 0.35 * blink);
+            
+            ctx.save(); 
+            ctx.translate(b.position.x, b.position.y); 
+            ctx.scale(perspective, perspective);
+            const spin = time * this.BOMB_SPIN_SPEED;
+            ctx.rotate((b.angle || 0) + spin);
+            
+            try {
+                ctx.save();
+                ctx.globalCompositeOperation = 'lighter';
+                const glow = ctx.createRadialGradient(0, 0, drawR * 0.2, 0, 0, glowRadius);
+                glow.addColorStop(0, `rgba(${this.BOMB_GLOW_RGB}, ${glowAlpha})`);
+                glow.addColorStop(1, `rgba(${this.BOMB_GLOW_RGB}, 0)`);
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(0, 0, glowRadius, 0, 6.28);
+                ctx.fill();
+                
+                const orbitAngle = time * this.BOMB_ORBIT_SPEED;
+                const orbitR = drawR * this.BOMB_ORBIT_RADIUS;
+                const orbitSize = Math.max(2, drawR * this.BOMB_ORBIT_SIZE);
+                ctx.fillStyle = `rgba(${this.BOMB_GLOW_RGB}, ${0.45 + 0.4 * blink})`;
+                ctx.beginPath();
+                ctx.arc(Math.cos(orbitAngle) * orbitR, Math.sin(orbitAngle) * orbitR, orbitSize, 0, 6.28);
+                ctx.fill();
+                ctx.restore();
+                
+                if(Resources.images['bomb'] && Resources.images['bomb'].complete) {
+                    ctx.drawImage(Resources.images['bomb'], -drawR*1.5, -drawR*1.5, drawR*3, drawR*3);
+                } else {
+                    ctx.fillStyle='black';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, drawR, 0, 6.28);
+                    ctx.fill();
+                }
+            } catch (err) {
+                console.warn('Error drawing bomb:', err);
+                // Fallback
+                ctx.fillStyle='black';
+                ctx.beginPath();
+                ctx.arc(0, 0, drawR, 0, 6.28);
+                ctx.fill();
+            }
+            ctx.restore();
+        } catch (err) {
+            console.warn('Error in drawBomb:', err);
+        }
+    },
+    drawBlock: function(b) {
+        const ctx=this.ctx; const img=Resources.images[b.renderKey];
+        ctx.save(); ctx.translate(b.position.x, b.position.y); ctx.rotate(b.angle);
+        if(img) {
+            if(b.renderShape==='circle') ctx.drawImage(img,-b.circleRadius,-b.circleRadius,b.circleRadius*2,b.circleRadius*2);
+            else { const w=b.bounds.max.x-b.bounds.min.x; const h=b.bounds.max.y-b.bounds.min.y; ctx.drawImage(img,-w/2,-h/2,w,h); }
+        }
+        ctx.restore();
+    },
+    drawGridBase: function(b) {
+        try {
+            if (!b || !b.position || !b.bounds) return;
+            const ctx = this.ctx;
+            if (!ctx) return;
+
+            const s = this.scaleFactor || 1;
+            const w = b.bounds.max.x - b.bounds.min.x;
+            const h = b.bounds.max.y - b.bounds.min.y;
+            if (!w || !h) return;
+
+            ctx.save();
+            ctx.translate(b.position.x, b.position.y);
+            ctx.rotate(b.angle || 0);
+            // Transparent base: keep body for alignment, skip visible fill
+            ctx.shadowBlur = 0;
+            ctx.restore();
+        } catch (err) {
+            console.warn('Error drawing grid base:', err);
+        }
+    },
+    drawSlingRope: function(start, end, side, isFront) {
+        const ctx = this.ctx;
+        const s = this.scaleFactor || 1;
+        if (!ctx || !start || !end) return;
+
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const dist = Math.max(1, Math.hypot(dx, dy));
+        const nx = -dy / dist;
+        const ny = dx / dist;
+        const sag = Math.min(22 * s, Math.max(6 * s, dist * 0.08));
+        const sideOffset = 6 * s * side;
+
+        const c1 = {
+            x: start.x + dx * 0.25 + nx * sideOffset,
+            y: start.y + dy * 0.18 + ny * sideOffset + sag
+        };
+        const c2 = {
+            x: start.x + dx * 0.75 + nx * sideOffset,
+            y: start.y + dy * 0.78 + ny * sideOffset + sag * 0.6
+        };
+
+        const baseW = Math.min(10 * s, 4.5 * s + dist * 0.012);
+
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.shadowColor = isFront ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.25)';
+        ctx.shadowBlur = 6 * s;
+        ctx.strokeStyle = isFront ? '#2E3A33' : '#27302B';
+        ctx.lineWidth = baseW;
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y);
+        ctx.stroke();
+
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+        ctx.lineWidth = baseW * 0.55;
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(0,0,0,0.28)';
+        ctx.lineWidth = baseW * 0.35;
+        ctx.setLineDash([5 * s, 7 * s]);
+        ctx.lineDashOffset = -(performance.now() * 0.02);
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y);
+        ctx.stroke();
+        ctx.restore();
+    },
+    drawSling: function(isFront) {
+        const ctx=this.ctx; const s=this.scaleFactor; const sx=this.currentAnchor.x; const sy=this.currentAnchor.y;
+        ctx.lineCap='round'; ctx.lineJoin='round';
+        const slingMetrics = this.getSlingMetrics();
+        const slingImg = slingMetrics.slingImg;
+        const hasSlingImg = slingMetrics.hasSlingImg;
+        const tieLeft = slingMetrics.tieLeft;
+        const tieRight = slingMetrics.tieRight;
+        const imgW = slingMetrics.imgW;
+        const imgH = slingMetrics.imgH;
+        const anchorX = slingMetrics.anchorX;
+        const anchorY = slingMetrics.anchorY;
+        const scaleX = slingMetrics.scaleX;
+        const scaleY = slingMetrics.scaleY;
+
+        if(!isFront) {
+            if(hasSlingImg) {
+                ctx.drawImage(
+                    slingImg,
+                    sx - anchorX * scaleX,
+                    sy - anchorY * scaleY,
+                    imgW * scaleX,
+                    imgH * scaleY
+                );
+            } else {
+                // Back layer: wooden base with gradient and shadow
+                // Shadow effect
+                ctx.save();
+                ctx.fillStyle='rgba(0,0,0,0.2)'; 
+                ctx.beginPath(); 
+                ctx.moveTo(sx+10*s,sy+3*s); 
+                ctx.lineTo(sx+35*s,sy-47*s); 
+                ctx.lineTo(sx+20*s,sy+3*s); 
+                ctx.fill();
+                ctx.restore();
+                
+                // Right arm with gradient - earthy olive/green tones
+                var gRight = ctx.createLinearGradient(sx+10*s, sy, sx+35*s, sy-50*s);
+                gRight.addColorStop(0, '#6B7A5C');
+                gRight.addColorStop(1, '#7A8F6B');
+                ctx.fillStyle=gRight; 
+                ctx.beginPath(); 
+                ctx.moveTo(sx+10*s,sy); 
+                ctx.lineTo(sx+35*s,sy-50*s); 
+                ctx.lineTo(sx+20*s,sy); 
+                ctx.fill();
+            }
+            
+            // Right rope connection (back layer)
+            if(this.slingshot && this.slingshot.bodyB && this.projectile && this.projectile.position) { 
+                this.drawSlingRope(tieRight, this.projectile.position, 1, false);
+            }
+        } else {
+            // Front layer: ropes and left arm
+            if(this.slingshot && this.slingshot.bodyB && this.projectile && this.projectile.position) {
+                // Left rope (front layer)
+                this.drawSlingRope(tieLeft, this.projectile.position, -1, true);
+            }
+            
+            if(!hasSlingImg) {
+                // Left arm with gradient - earthy olive/green tones
+                var gLeft = ctx.createLinearGradient(sx-10*s, sy, sx-35*s, sy-50*s);
+                gLeft.addColorStop(0, '#6B7A5C');
+                gLeft.addColorStop(1, '#7A8F6B');
+                ctx.fillStyle=gLeft; 
+                ctx.beginPath(); 
+                ctx.moveTo(sx-10*s,sy); 
+                ctx.lineTo(sx-35*s,sy-50*s); 
+                ctx.lineTo(sx-20*s,sy); 
+                ctx.fill();
+                
+                // Center shaft with gradient - earthy muted tones
+                var gShaft = ctx.createLinearGradient(sx-8*s, sy, sx-8*s, sy+90*s);
+                gShaft.addColorStop(0, '#6B7A5C');
+                gShaft.addColorStop(0.5, '#5F7052');
+                gShaft.addColorStop(1, '#6B7A5C');
+                ctx.fillStyle=gShaft;
+                ctx.fillRect(sx-8*s,sy,16*s,90*s);
+                
+                // Shaft highlight
+                ctx.fillStyle='rgba(255,255,255,0.08)';
+                ctx.fillRect(sx-6*s,sy+2*s,4*s,86*s);
+            }
+        }
+    },
+    drawTraj: function() {
+        const ctx=this.ctx; 
+        const slingPoint = this.getSlingMetrics().tieMid;
+        const d=Vector.sub(slingPoint,this.projectile.position);
+        const launchForce = this.FORCE * this.BOMB_SPEED_SCALE;
+        let vx=d.x*launchForce; 
+        let vy=d.y*launchForce; 
+        let x=this.projectile.position.x; 
+        let y=this.projectile.position.y;
+
+        ctx.fillStyle='#FFF';
+        const radius = 4 * this.scaleFactor;   // smaller dots
+        const steps = 50;                      // bigger/longer arc
+        const fadeStart = Math.floor(steps * 0.5); // start fading after 50%
+
+        for(let i=0; i<steps; i++) { 
+            x += vx * 0.8;   // slightly smaller step to increase dot density
+            y += vy * 0.8;
+            vy += 1.6 * 0.8; 
+            if(i > 1) { 
+                if (i <= fadeStart) {
+                    ctx.globalAlpha = 1;              // first half: solid
+                } else {
+                    const t = (i - fadeStart) / (steps - fadeStart);
+                    ctx.globalAlpha = 1 - t;          // second half: fade to 0
+                }
+                ctx.beginPath(); 
+                ctx.arc(x, y, radius, 0, 6.28); 
+                ctx.fill(); 
+            } 
+        }
+        ctx.globalAlpha = 1;
+    }
+};
+
+Game.init();
+</script>
+</body>
+</html>
