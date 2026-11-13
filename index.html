@@ -203,31 +203,37 @@
         background:rgba(255,253,248,.94);border:1.5px solid var(--ink);border-radius:6px;padding:7px 14px;color:var(--ink);font:700 clamp(14px,3.6vw,17px)/1.2 'Barlow Condensed',sans-serif;letter-spacing:1.6px;text-transform:uppercase;text-align:center;max-width:92vw}
     #hint.show{opacity:1}
     @media (orientation:landscape){#hint{left:3vw;top:auto;bottom:38%;transform:none;max-width:27vw;text-align:left}}
+    :root{--gold:#c9962b;--gold2:#e0a82e;--navy:#1c2b6b;--goldtxt:#9a6f10}
     #quiz{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(20,33,61,.38);z-index:70;touch-action:manipulation}
     #quiz.show{display:flex}
-    .sheet{width:min(860px,96vw);margin-bottom:max(2.5vh,env(safe-area-inset-bottom));background:var(--paper);border:2px solid var(--ink);border-radius:8px;box-shadow:0 18px 50px rgba(20,33,61,.35);color:var(--ink);max-height:88vh;overflow:auto;animation:rise .3s ease-out}
+    .panel{width:min(980px,96vw);margin-bottom:max(2.5vh,env(safe-area-inset-bottom));background:#f7f2e6;border-top:4px solid var(--gold);box-shadow:0 -8px 30px rgba(20,33,61,.28);padding:clamp(12px,2.6vw,22px);max-height:86vh;overflow:auto;color:var(--ink);animation:rise .3s ease-out}
     @keyframes rise{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+    .qtop{display:flex;justify-content:space-between;font:700 clamp(13px,3vw,15px)/1 'Barlow Condensed',sans-serif;letter-spacing:3px;color:var(--goldtxt);margin-bottom:10px;text-transform:uppercase}
+    .hex{--c:22px;display:block;width:100%;border:0;padding:2px;background:var(--gold);color:var(--ink);text-align:left;clip-path:polygon(var(--c) 0,calc(100% - var(--c)) 0,100% 50%,calc(100% - var(--c)) 100%,var(--c) 100%,0 50%);cursor:pointer;font:inherit}
+    .hexin{display:flex;align-items:center;gap:12px;min-height:clamp(50px,9vw,60px);padding:8px calc(var(--c) + 8px);background:#fffdf8;clip-path:polygon(calc(var(--c) - 1px) 0,calc(100% - var(--c) + 1px) 0,100% 50%,calc(100% - var(--c) + 1px) 100%,calc(var(--c) - 1px) 100%,0 50%)}
+    .hex.q{cursor:default;margin-bottom:12px}
+    .hex.q .hexin{justify-content:center;text-align:center;min-height:clamp(70px,16vw,96px);background:var(--navy);color:#fff}
+    #qtext{font:700 clamp(19px,4.6vw,28px)/1.22 'Barlow',sans-serif}
+    .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+    @media (max-width:620px){.opts{grid-template-columns:1fr;gap:8px}.hex{--c:16px}}
+    .opt b{font:800 clamp(18px,4vw,22px)/1 'Barlow Condensed',sans-serif;color:var(--goldtxt);flex:none;letter-spacing:1px}
+    .opt span{font:500 clamp(15px,3.6vw,18px)/1.2 'Barlow',sans-serif;color:var(--ink)}
+    .opt:hover:not(:disabled) .hexin{background:#fff1c9}
+    .opt.lock .hexin{background:var(--amber)}
+    .opt.right .hexin{background:var(--ok)}
+    .opt.wrong .hexin{background:var(--bad)}
+    .opt.lock b,.opt.lock span,.opt.right b,.opt.right span,.opt.wrong b,.opt.wrong span{color:#fff}
+    .opt:disabled{cursor:default}
+    .opt.pulse .hexin{animation:blink .5s 3}
+    @keyframes blink{50%{filter:brightness(1.25)}}
+    .fbk{display:none;margin-top:12px;font:500 clamp(14px,3.4vw,17px)/1.4 'Barlow',sans-serif;color:var(--ink)}
+    .fbk.show{display:block}
+    .fbk .v{font:800 clamp(18px,4vw,22px)/1 'Barlow Condensed',sans-serif;letter-spacing:2px;text-transform:uppercase;margin-right:8px}
+    .fbk .v.ok{color:var(--ok)}.fbk .v.no{color:var(--bad)}
+    .gbtn{display:none;margin:12px 0 0 auto;border:0;cursor:pointer;color:var(--ink);font:800 18px/1 'Barlow Condensed',sans-serif;letter-spacing:3px;text-transform:uppercase;padding:13px 34px;background:var(--gold2);clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+    .gbtn:active{background:var(--gold)}
     .shead{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;padding:9px 18px;font:700 clamp(13px,3vw,15px)/1 'Barlow Condensed',sans-serif;letter-spacing:2.5px;text-transform:uppercase}
     .shead i{font-style:normal;color:#f2c14e}
-    .sbody{padding:clamp(14px,3vw,22px) clamp(14px,3vw,26px) clamp(14px,3vw,22px)}
-    .qt{font:700 clamp(19px,4.6vw,27px)/1.25 'Barlow',sans-serif;margin:0 0 14px}
-    .opts{border-top:1.5px solid var(--line)}
-    .opt{position:relative;display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:none;border:0;border-bottom:1.5px solid var(--line);padding:11px 8px;cursor:pointer;font:500 clamp(15px,3.7vw,18px)/1.3 'Barlow',sans-serif;color:var(--ink)}
-    .opt:hover:not(:disabled){background:#f4efe3}
-    .bub{flex:none;width:30px;height:30px;border:2px solid var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 15px/1 'Barlow Condensed',sans-serif;letter-spacing:.5px;transition:background .15s}
-    .opt.lock .bub{background:var(--amber);border-color:var(--amber);color:#fff}
-    .opt.right{background:#e7f4ec}.opt.right .bub{background:var(--ok);border-color:var(--ok);color:#fff}
-    .opt.wrong{background:#fbe9e6}.opt.wrong .bub{background:var(--bad);border-color:var(--bad);color:#fff}
-    .opt.right::before,.opt.wrong::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
-    .opt.right::before{background:var(--ok)}.opt.wrong::before{background:var(--bad)}
-    .opt.pulse .bub{animation:blink .5s 3}
-    @keyframes blink{50%{transform:scale(1.25)}}
-    .mark{margin-left:auto;flex:none;width:22px;height:22px;display:none}
-    .opt.right .mark.t,.opt.wrong .mark.x{display:block}
-    .note{display:none;margin-top:14px;padding:11px 14px;border-left:5px solid var(--mute);background:#f4efe3;font:500 clamp(14px,3.4vw,16px)/1.4 'Barlow',sans-serif}
-    .note.show{display:block}.note.ok{border-color:var(--ok)}.note.no{border-color:var(--bad)}
-    .note .v{font:800 17px/1 'Barlow Condensed',sans-serif;letter-spacing:2px;text-transform:uppercase;margin-right:8px}
-    .note.ok .v{color:var(--ok)}.note.no .v{color:var(--bad)}
     .go{display:none;margin:14px 0 0 auto;border:0;cursor:pointer;background:var(--ink);color:#fff;border-radius:6px;padding:12px 28px;font:800 17px/1 'Barlow Condensed',sans-serif;letter-spacing:3px;text-transform:uppercase}
     .go:hover{background:var(--brand)}
     #finish{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(20,33,61,.5);z-index:80}
@@ -279,7 +285,7 @@
 
 <div id="hint">Pull back, let go. Burst a box to get a question.</div>
 <div id="hud2"><div class="stat"><span class="lbl">MARKS</span><b id="sc">0</b></div><div id="steps"></div><div class="stat"><span class="lbl">QUESTION</span><b><span id="qn">0</span><small>/ 9</small></b></div></div>
-<div id="quiz" role="dialog" aria-modal="true"><div class="sheet"><div class="shead"><span id="qmeta"></span><i>10 MARKS</i></div><div class="sbody"><p class="qt" id="qtext"></p><div class="opts" id="qopts"></div><div class="note" id="qres"></div><button class="go" id="qnext">Next</button></div></div></div>
+<div id="quiz" role="dialog" aria-modal="true"><div class="panel"><div class="qtop"><span id="qmeta"></span><span>10 points</span></div><div class="hex q"><div class="hexin"><span id="qtext"></span></div></div><div class="opts" id="qopts"></div><div class="fbk" id="qres"></div><button class="gbtn" id="qnext">Next</button></div></div>
 <div id="finish"><div class="slip"><div class="shead">Result</div><div class="in"><div class="marks"><span id="fscore"></span><small>/ 90</small></div><div class="grade" id="fbadge"></div><p id="fmsg"></p><p class="cta">Want training like this built from your own policies?<br><b>Send us 1 file. We'll build you a free sample module.</b></p><p class="mail">sales@keenminddesigns.com &middot; keenminddesigns.com</p><button class="go" id="again">Play again</button></div></div></div>
 <div id="brand">keenmind designs &middot; sample demo</div>
 
@@ -322,20 +328,18 @@ const DemoUI = {
         this.open = true; this.locked = false;
         try { Game.isPaused = true; } catch (e) {}
         this.markCurrent();
-        this.el('qmeta').textContent = 'Assessment \u00b7 Question ' + (this.answered + 1) + ' of 9';
+        this.el('qmeta').textContent = 'Question ' + (this.answered + 1) + ' of 9';
         this.el('qtext').textContent = part.q;
         const box = this.el('qopts'); box.innerHTML = '';
         part.o.forEach((t, i) => {
             const b = document.createElement('button');
-            b.className = 'opt'; b.type = 'button';
-            b.innerHTML = '<span class="bub">' + 'ABCD'[i] + '</span><span class="t"></span>' +
-                '<svg class="mark t" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#2e8b57" stroke-width="3.2" stroke-linecap="square"/></svg>' +
-                '<svg class="mark x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="#c8453b" stroke-width="3.2" stroke-linecap="square"/></svg>';
-            b.querySelector('.t').textContent = t;
+            b.className = 'hex opt'; b.type = 'button';
+            b.innerHTML = '<div class="hexin"><b>' + 'ABCD'[i] + ':</b><span></span></div>';
+            b.querySelector('span').textContent = t;
             b.addEventListener('click', () => this.pick(part, i));
             box.appendChild(b);
         });
-        const res = this.el('qres'); res.className = 'note'; res.innerHTML = '';
+        const res = this.el('qres'); res.className = 'fbk'; res.innerHTML = '';
         this.el('qnext').style.display = 'none';
         this.el('quiz').classList.add('show');
     },
@@ -353,14 +357,14 @@ const DemoUI = {
                 btns[i].classList.add('right');
                 this.score += 10; this.el('sc').textContent = this.score;
                 if (step) step.classList.add('ok');
-                res.className = 'note show ok';
-                res.innerHTML = '<span class="v">Correct</span>+10 marks. ' + part.w;
+                res.className = 'fbk show';
+                res.innerHTML = '<span class="v ok">Correct</span>+10 points. ' + part.w;
                 try { AudioCtrl.tone('ok'); } catch (e) {}
             } else {
                 btns[i].classList.add('wrong'); btns[part.a].classList.add('right', 'pulse');
                 if (step) step.classList.add('no');
-                res.className = 'note show no';
-                res.innerHTML = '<span class="v">Incorrect</span>The answer is ' + 'ABCD'[part.a] + ': ' + part.o[part.a] + '. ' + part.w;
+                res.className = 'fbk show';
+                res.innerHTML = '<span class="v no">Not quite</span>The answer is ' + 'ABCD'[part.a] + ': ' + part.o[part.a] + '. ' + part.w;
                 try { AudioCtrl.tone('bad'); } catch (e) {}
             }
             this.answered++; this.el('qn').textContent = this.answered;
