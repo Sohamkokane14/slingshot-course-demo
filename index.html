@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Slingshot Course Builder - a keenmind designs demo</title>
+<title>Cyber Security Slingshot Quiz - a keenmind designs demo</title>
 
 <!-- Matter.js Physics Engine -->
 <script src="lib/matter.min.js"></script>
 <!-- Confetti Effect -->
 <script src="lib/confetti.browser.min.js"></script>
-<link rel="preload" as="image" href="Images/bg.webp">
+<link rel="preload" as="image" href="Images/bg-light.webp">
 
 <style>
     :root {
@@ -24,8 +24,8 @@
         margin: 0;
         width: 100%;
         height: 100%;
-        background-color: #0d1117;
-        background-image: url('Images/bg.webp');
+        background-color: #dff0ff;
+        background-image: url('Images/bg-light.webp');
         background-size: cover;
         background-position: center bottom;
         background-repeat: no-repeat;
@@ -77,7 +77,7 @@
 
     /* LOADING & FAIL SCREENS */
     #loading-screen { 
-        background: radial-gradient(circle at 50% 40%, #1b2347, #0b1020); 
+        background: linear-gradient(#cfe8ff, #f2f9ff); 
         opacity: 1; 
         pointer-events: auto; 
         z-index: 100; 
@@ -179,24 +179,41 @@
     }
 
 
-    #reveal{position:fixed;left:50%;top:9%;transform:translate(-50%,-30px);opacity:0;pointer-events:none;z-index:50;
-        background:rgba(10,14,28,.92);border:2px solid #2dd4bf;border-radius:22px;padding:18px 28px;text-align:center;max-width:86vw;
-        box-shadow:0 0 40px rgba(45,212,191,.35);transition:all .35s cubic-bezier(.34,1.56,.64,1);font-family:'Poppins',sans-serif;color:#fff}
-    #reveal.show{opacity:1;transform:translate(-50%,0)}
-    .rv-tag{font-size:13px;letter-spacing:3px;color:#5eead4;font-weight:700}
-    .rv-name{font-size:34px;font-weight:900;margin:2px 0;color:#FFD700}
-    .rv-line{font-size:18px;color:#e2e8f0}
-    #finish{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(5,8,20,.82);z-index:60;font-family:'Poppins',sans-serif}
-    #finish.show{display:flex}
-    .fin-card{background:#0f172a;border:2px solid #2dd4bf;border-radius:26px;padding:34px 38px;max-width:520px;width:88vw;text-align:center;color:#fff}
-    .fin-card h2{font-size:34px;margin:0 0 10px;color:#FFD700}
-    .fin-card p{font-size:17px;line-height:1.5;color:#cbd5e1;margin:8px 0}
-    .fin-cta b{color:#fff}.fin-mail{color:#5eead4!important;font-weight:600;margin-bottom:18px!important}
-    #brand{position:fixed;right:14px;bottom:10px;z-index:40;font:600 13px 'Poppins',sans-serif;color:rgba(255,255,255,.7);pointer-events:none}
-    #hint{position:fixed;left:50%;top:7%;transform:translateX(-50%);z-index:45;pointer-events:none;opacity:0;transition:opacity .4s;
-        background:rgba(10,14,28,.88);border:2px solid #FFD700;border-radius:40px;padding:12px 24px;color:#fff;font-weight:700;
-        font-size:clamp(14px,3.6vw,20px);text-align:center;max-width:88vw}
+    #score{position:fixed;left:12px;top:12px;z-index:45;display:flex;gap:8px;pointer-events:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+    .chip{background:rgba(255,255,255,.94);border:2px solid #c9d8ee;border-radius:30px;padding:6px 14px;color:#0f2747;font-weight:800;font-size:clamp(13px,3.4vw,17px);box-shadow:0 4px 14px rgba(15,39,71,.14)}
+    .chip b{color:#2563eb}
+    #hint{position:fixed;left:50%;top:62px;transform:translateX(-50%);z-index:45;pointer-events:none;opacity:0;transition:opacity .4s;
+        background:rgba(255,255,255,.96);border:2px solid #2563eb;border-radius:40px;padding:10px 22px;color:#0f2747;font-weight:700;
+        font-size:clamp(13px,3.5vw,18px);text-align:center;max-width:90vw;box-shadow:0 6px 20px rgba(15,39,71,.15);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
     #hint.show{opacity:1}
+    #quiz{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(214,232,255,.72);backdrop-filter:blur(3px);z-index:70;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;touch-action:manipulation}
+    #quiz.show{display:flex}
+    .qcard{background:#fff;border:2px solid #c9d8ee;border-radius:26px;box-shadow:0 22px 60px rgba(15,39,71,.28);padding:clamp(16px,4vw,30px);width:min(680px,94vw);max-height:94vh;overflow:auto;color:#0f2747;animation:qin .35s cubic-bezier(.34,1.4,.64,1)}
+    @keyframes qin{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+    .qmeta{display:flex;justify-content:space-between;font-size:clamp(11px,3vw,13px);font-weight:800;letter-spacing:1.5px;color:#2563eb}
+    .qtext{font-size:clamp(17px,4.6vw,25px);font-weight:800;line-height:1.3;margin:12px 0 16px}
+    .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:560px){.opts{grid-template-columns:1fr}}
+    .qopt{display:flex;align-items:center;gap:12px;text-align:left;background:#f4f8ff;border:2px solid #c9d8ee;border-radius:40px;padding:10px 14px;font:700 clamp(14px,3.7vw,16px)/1.25 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#0f2747;cursor:pointer;transition:background .15s,border-color .15s}
+    .qopt:hover:not(:disabled){border-color:#2563eb;background:#eaf2ff}
+    .qopt i{font-style:normal;width:30px;height:30px;flex:none;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .qopt.lock{background:#fff4d6;border-color:#f59e0b}.qopt.lock i{background:#f59e0b}
+    .qopt.right{background:#dcfce7;border-color:#16a34a}.qopt.right i{background:#16a34a}
+    .qopt.wrong{background:#fee2e2;border-color:#dc2626}.qopt.wrong i{background:#dc2626}
+    .qopt:disabled{cursor:default}
+    .qres{margin-top:14px;border-radius:18px;padding:12px 16px;font-size:clamp(14px,3.7vw,16px);line-height:1.45;display:none}
+    .qres.ok{display:block;background:#dcfce7;color:#14532d}.qres.no{display:block;background:#fee2e2;color:#7f1d1d}
+    #qnext{display:none;margin:14px auto 0}
+    .btn{background:linear-gradient(90deg,#2563eb,#1d4ed8);color:#fff;box-shadow:0 5px 0 #1e3a8a}
+    .loader-text{color:#2563eb}
+    #finish{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(214,232,255,.8);backdrop-filter:blur(3px);z-index:80;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+    #finish.show{display:flex}
+    .fin-card{background:#fff;border:2px solid #c9d8ee;border-radius:26px;padding:30px 34px;max-width:520px;width:90vw;text-align:center;color:#0f2747;box-shadow:0 22px 60px rgba(15,39,71,.28);max-height:94vh;overflow:auto}
+    .fin-badge{display:inline-block;background:#fff4d6;border:2px solid #f59e0b;color:#92400e;border-radius:30px;padding:6px 16px;font-weight:800;font-size:14px;letter-spacing:1px}
+    .fin-card h2{font-size:clamp(28px,7vw,40px);margin:12px 0 6px;color:#2563eb}
+    .fin-card p{font-size:16px;line-height:1.5;color:#41567a;margin:8px 0}
+    .fin-cta b{color:#0f2747}.fin-mail{color:#2563eb!important;font-weight:700;margin-bottom:16px!important}
+    #brand{position:fixed;right:14px;bottom:10px;z-index:40;font:600 13px system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:rgba(255,255,255,.92);text-shadow:0 1px 3px rgba(0,0,0,.45);pointer-events:none}
     @keyframes pulse { 50% { opacity: 0.5; } }
 </style>
 </head>
@@ -231,9 +248,10 @@
     </div>
 </div>
 
-<div id="hint">Drag the glowing ball back, then let go</div>
-<div id="reveal" aria-live="polite"><div class="rv-tag" id="rv-count"></div><div class="rv-name" id="rv-name"></div><div class="rv-line" id="rv-line"></div></div>
-<div id="finish"><div class="fin-card"><h2>All 9 unlocked</h2><p>That's the loop behind every course we build: hook, choice, feedback, retry.</p><p class="fin-cta">Got a document or SOP sitting in a backlog?<br><b>Send us 1 file. We'll build you a free sample module.</b></p><p class="fin-mail">sales@keenminddesigns.com &middot; keenminddesigns.com</p><button class="btn" id="again">Play again</button></div></div>
+<div id="hint">Drag the ball back, then let go. Burst a box to get a question.</div>
+<div id="score"><div class="chip">Score <b id="sc">0</b></div><div class="chip">Answered <b id="qn">0</b>/9</div></div>
+<div id="quiz" role="dialog" aria-modal="true"><div class="qcard"><div class="qmeta"><span id="qmeta"></span><span>10 POINTS</span></div><div class="qtext" id="qtext"></div><div class="opts" id="qopts"></div><div class="qres" id="qres"></div><button class="btn" id="qnext">Continue</button></div></div>
+<div id="finish"><div class="fin-card"><div class="fin-badge" id="fbadge"></div><h2 id="fscore"></h2><p id="fmsg"></p><p class="fin-cta">Want training like this built from your own policies?<br><b>Send us 1 file. We'll build you a free sample module.</b></p><p class="fin-mail">sales@keenminddesigns.com &middot; keenminddesigns.com</p><button class="btn" id="again">Play again</button></div></div>
 <div id="brand">keenmind designs &middot; sample demo</div>
 
 
@@ -245,37 +263,102 @@ window.missed = false;                 // True if last shot missed the active bo
 window.GameCompleted = false;          // Set to true when all targets are recovered
 
 const DemoUI = {
-    timer: null,
-    reveal: function(part, found) {
-        if (!part) return;
-        document.getElementById('rv-count').textContent = 'INSIGHT ' + found + ' OF 9';
-        document.getElementById('rv-name').textContent = part.name;
-        document.getElementById('rv-line').textContent = part.line || '';
-        const el = document.getElementById('reveal');
-        el.classList.add('show');
-        clearTimeout(this.timer);
-        this.timer = setTimeout(() => el.classList.remove('show'), 2600);
+    score: 0, answered: 0, queue: [], open: false, pending: false, completed: false, locked: false,
+    el: function(id) { return document.getElementById(id); },
+    ask: function(part) {
+        if (!part || !part.q) return;
+        this.queue.push(part);
+        if (!this.open && !this.pending) {
+            this.pending = true;
+            setTimeout(() => { this.pending = false; this.next(); }, 550);
+        }
     },
+    next: function() {
+        const part = this.queue.shift();
+        if (!part) {
+            this.open = false;
+            try { Game.isPaused = false; } catch (e) {}
+            if (this.completed && this.answered >= 9) this.showFinish();
+            return;
+        }
+        this.open = true; this.locked = false;
+        try { Game.isPaused = true; } catch (e) {}
+        this.el('qmeta').textContent = 'QUESTION ' + (this.answered + 1) + ' OF 9';
+        this.el('qtext').textContent = part.q;
+        const box = this.el('qopts'); box.innerHTML = '';
+        part.o.forEach((t, i) => {
+            const b = document.createElement('button');
+            b.className = 'qopt'; b.type = 'button';
+            b.innerHTML = '<i>' + 'ABCD'[i] + '</i><span></span>';
+            b.querySelector('span').textContent = t;
+            b.addEventListener('click', () => this.pick(part, i));
+            box.appendChild(b);
+        });
+        const res = this.el('qres'); res.className = 'qres'; res.innerHTML = '';
+        this.el('qnext').style.display = 'none';
+        this.el('quiz').classList.add('show');
+    },
+    pick: function(part, i) {
+        if (this.locked) return;
+        this.locked = true;
+        const btns = Array.prototype.slice.call(this.el('qopts').children);
+        btns.forEach(b => b.disabled = true);
+        btns[i].classList.add('lock');
+        setTimeout(() => {
+            btns[i].classList.remove('lock');
+            const res = this.el('qres');
+            if (i === part.a) {
+                btns[i].classList.add('right');
+                this.score += 10; this.el('sc').textContent = this.score;
+                res.className = 'qres ok';
+                res.innerHTML = '<b>Correct! +10 points.</b><br>' + part.w;
+                try { AudioCtrl.tone('ok'); } catch (e) {}
+            } else {
+                btns[i].classList.add('wrong'); btns[part.a].classList.add('right');
+                res.className = 'qres no';
+                res.innerHTML = '<b>Not quite.</b> The right answer is ' + 'ABCD'[part.a] + ': ' + part.o[part.a] + '.<br>' + part.w;
+                try { AudioCtrl.tone('bad'); } catch (e) {}
+            }
+            this.answered++; this.el('qn').textContent = this.answered;
+            const nx = this.el('qnext');
+            nx.textContent = this.answered >= 9 ? 'See my score' : 'Continue';
+            nx.style.display = 'block';
+        }, 700);
+    },
+    closeQ: function() { this.el('quiz').classList.remove('show'); this.next(); },
     finish: function() {
-        setTimeout(() => document.getElementById('finish').classList.add('show'), 1400);
+        this.completed = true;
+        if (!this.open && this.queue.length === 0 && this.answered >= 9) this.showFinish();
+    },
+    showFinish: function() {
+        const pct = this.score / 90;
+        const badge = pct >= 0.8 ? 'CYBER CHAMPION' : (pct >= 0.5 ? 'SECURITY AWARE' : 'KEEP PRACTISING');
+        const msg = pct >= 0.8 ? 'You spot the traps. Teach your team what you know.'
+                  : (pct >= 0.5 ? 'A solid base. A few more habits and you are there.'
+                                : 'Every miss is a lesson. Play again and beat your score.');
+        this.el('fbadge').textContent = badge;
+        this.el('fscore').textContent = this.score + ' / 90';
+        this.el('fmsg').textContent = msg;
+        this.el('quiz').classList.remove('show');
+        this.el('finish').classList.add('show');
     }
 };
 document.addEventListener('DOMContentLoaded', () => {
-    const b = document.getElementById('again');
-    if (b) b.addEventListener('click', () => location.reload());
+    const a = document.getElementById('again'); if (a) a.addEventListener('click', () => location.reload());
+    const n = document.getElementById('qnext'); if (n) n.addEventListener('click', () => DemoUI.closeQ());
 });
 
 // --- GAME DATA ---
 const PARTS_DB = [
-    { name: "Hook", line: "Start with a problem the learner already has.", file: "Images/box.webp" },
-    { name: "Story", line: "A person and a moment beat a list of rules.", file: "Images/box.webp" },
-    { name: "Choice", line: "Make them decide before you tell them.", file: "Images/box.webp" },
-    { name: "Consequence", line: "Show what happens next, good or bad.", file: "Images/box.webp" },
-    { name: "Feedback", line: "Explain why, right after the choice.", file: "Images/box.webp" },
-    { name: "Score", line: "Track decisions, not just page views.", file: "Images/box.webp" },
-    { name: "Retry", line: "A safe second go is where learning sticks.", file: "Images/box.webp" },
-    { name: "Reward", line: "Small wins keep people playing.", file: "Images/box.webp" },
-    { name: "Recap", line: "End with the one rule to remember.", file: "Images/box.webp" }
+    { name: "Phishing", q: "An email from 'IT Support' asks you to confirm your password through a link. What do you do first?", o: ["Click the link and log in quickly", "Reply with your password to be safe", "Don't click. Report it to the security team", "Forward it to colleagues as a warning"], a: 2, w: "Real IT teams never ask for your password by email. Report it, then delete it.", file: "Images/box.webp" },
+    { name: "Passwords", q: "Which password is the hardest to crack?", o: ["Password123!", "Four random words, like tulip-moon-brick-seven", "Your pet's name and birth year", "Your name spelled backwards"], a: 1, w: "Length beats cleverness. A passphrase of 4 or more random words is long and still easy to remember.", file: "Images/box.webp" },
+    { name: "MFA", q: "What does multi-factor authentication (MFA) add to your login?", o: ["A second proof it's really you, on top of the password", "A longer password", "Automatic virus scans", "A backup of your files"], a: 0, w: "Even if a password is stolen, the attacker still needs your second factor.", file: "Images/box.webp" },
+    { name: "Public Wi-Fi", q: "You need to check work email at an airport. What is the safest option?", o: ["Join the strongest open Wi-Fi network", "Use any network, since email is encrypted anyway", "Turn off your screen lock to move faster", "Use the company VPN or your phone's hotspot"], a: 3, w: "Open Wi-Fi can be watched or spoofed. A VPN or your own hotspot keeps your traffic private.", file: "Images/box.webp" },
+    { name: "USB drives", q: "You find a USB stick in the car park. What should you do?", o: ["Plug it in to find out who owns it", "Take it home and try it on a personal laptop", "Hand it to IT or security without plugging it in", "Plug it into a spare office PC to be safe"], a: 2, w: "Dropped USB sticks are a classic attack. Never plug in a device you don't trust.", file: "Images/box.webp" },
+    { name: "Updates", q: "Why should you install software updates promptly?", o: ["They make the screen brighter", "They fix known security holes that attackers use", "They free up storage by deleting old files", "They are optional and only change themes"], a: 1, w: "Most attacks use flaws that already have a fix. Updating closes the door.", file: "Images/box.webp" },
+    { name: "CEO fraud", q: "A caller says they're the CEO and urgently asks you to transfer money. What now?", o: ["Do it quickly, it's the CEO", "Ask them to read out their bank details", "Keep it secret, as they asked", "Verify through a separate, known channel before acting"], a: 3, w: "Urgency and secrecy are red flags. Always confirm through a number or channel you already trust.", file: "Images/box.webp" },
+    { name: "Data leaks", q: "You email a file with customer data to the wrong person. What should you do?", o: ["Report it to security straight away", "Hope they ignore it", "Delete it from your Sent folder", "Ask them to delete it and tell nobody"], a: 0, w: "Fast reporting limits the damage. Hiding a mistake makes it worse.", file: "Images/box.webp" },
+    { name: "Tailgating", q: "A stranger follows you closely through a secure door. What should you do?", o: ["Hold the door, it's polite", "Politely ask who they are and send them to reception", "Ignore them", "Lend them your badge for a minute"], a: 1, w: "Everyone badges in for themselves. Politely redirect visitors to reception.", file: "Images/box.webp" }
 ];
 
 const ASSETS = {
@@ -337,6 +420,24 @@ const AudioCtrl = {
             console.warn('Audio play failed:', err);
         }
     }
+};
+
+AudioCtrl.tone = function(kind) {
+    try {
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+        const t = this.ctx.currentTime;
+        const seq = kind === 'ok' ? [523, 659, 784] : [220, 165];
+        seq.forEach((f, i) => {
+            const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+            o.type = kind === 'ok' ? 'triangle' : 'sawtooth'; o.frequency.value = f;
+            g.gain.setValueAtTime(0.0001, t + i * 0.12);
+            g.gain.exponentialRampToValueAtTime(0.18, t + i * 0.12 + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.12 + 0.2);
+            o.connect(g); g.connect(this.ctx.destination);
+            o.start(t + i * 0.12); o.stop(t + i * 0.12 + 0.22);
+        });
+    } catch (e) {}
 };
 
 const Resources = {
@@ -1319,13 +1420,14 @@ const Game = {
             const px = Math.min(Math.max(pos.x / w, 0.05), 0.95);
             const py = Math.min(Math.max(pos.y / h, 0.05), 0.95);
             
-            try { DemoUI.reveal(body.partData, 9 - ((this.targetsRemaining || 1) - 1)); } catch (e) {}
+            try { DemoUI.ask(body.partData); } catch (e) {}
             // Single confetti burst (lighter performance)
             try {
                 if (typeof confetti === 'function') {
                     confetti({
                         origin: { x: px, y: py },
                         colors: ['#00E676', '#B7FF76', '#FFD700', '#00C6FF'],
+                        zIndex: 60,
                         spread: 90,
                         particleCount: 120,
                         startVelocity: 35,
@@ -1834,7 +1936,7 @@ const Game = {
         let x=this.projectile.position.x; 
         let y=this.projectile.position.y;
 
-        ctx.fillStyle='#FFF';
+        ctx.fillStyle='#1d4ed8';
         const radius = 4 * this.scaleFactor;   // smaller dots
         const steps = 50;                      // bigger/longer arc
         const fadeStart = Math.floor(steps * 0.5); // start fading after 50%
