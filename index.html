@@ -6,13 +6,10 @@
 <title>Slingshot Course Builder - a keenmind designs demo</title>
 
 <!-- Matter.js Physics Engine -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<script src="lib/matter.min.js"></script>
 <!-- Confetti Effect -->
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="lib/confetti.browser.min.js"></script>
+<link rel="preload" as="image" href="Images/bg.webp">
 
 <style>
     :root {
@@ -22,23 +19,26 @@
         --border-glow: rgba(255, 215, 0, 0.6);
     }
 
+    html { height: 100%; }
     body {
         margin: 0;
+        width: 100%;
+        height: 100%;
         background-color: #0d1117;
-        background-image: url('Images/Game_background.jpg');
-        background-size: 100% 100%;
-        background-position: center;
+        background-image: url('Images/bg.webp');
+        background-size: cover;
+        background-position: center bottom;
         background-repeat: no-repeat;
         overflow: hidden;
-        font-family: 'Poppins', sans-serif;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
         user-select: none;
         touch-action: none;
     }
 
     canvas {
         display: block;
-        width: 100vw;
-        height: 100vh;
+        position: absolute;
+        touch-action: none;
     }
 
     /* --- UI OVERLAYS --- */
@@ -77,7 +77,7 @@
 
     /* LOADING & FAIL SCREENS */
     #loading-screen { 
-        background: #000; 
+        background: radial-gradient(circle at 50% 40%, #1b2347, #0b1020); 
         opacity: 1; 
         pointer-events: auto; 
         z-index: 100; 
@@ -162,7 +162,7 @@
     .btn {
         background: linear-gradient(90deg, #FFC107, #FF6F00);
         border: none; padding: 15px 40px; color: #000;
-        font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 18px; font-weight: 800;
         border-radius: 50px; cursor: pointer; text-transform: uppercase;
         box-shadow: 0 5px 0 #E65100;
     }
@@ -179,7 +179,7 @@
     }
 
 
-    #reveal{position:fixed;left:50%;bottom:6%;transform:translate(-50%,30px);opacity:0;pointer-events:none;z-index:50;
+    #reveal{position:fixed;left:50%;top:9%;transform:translate(-50%,-30px);opacity:0;pointer-events:none;z-index:50;
         background:rgba(10,14,28,.92);border:2px solid #2dd4bf;border-radius:22px;padding:18px 28px;text-align:center;max-width:86vw;
         box-shadow:0 0 40px rgba(45,212,191,.35);transition:all .35s cubic-bezier(.34,1.56,.64,1);font-family:'Poppins',sans-serif;color:#fff}
     #reveal.show{opacity:1;transform:translate(-50%,0)}
@@ -193,6 +193,10 @@
     .fin-card p{font-size:17px;line-height:1.5;color:#cbd5e1;margin:8px 0}
     .fin-cta b{color:#fff}.fin-mail{color:#5eead4!important;font-weight:600;margin-bottom:18px!important}
     #brand{position:fixed;right:14px;bottom:10px;z-index:40;font:600 13px 'Poppins',sans-serif;color:rgba(255,255,255,.7);pointer-events:none}
+    #hint{position:fixed;left:50%;top:7%;transform:translateX(-50%);z-index:45;pointer-events:none;opacity:0;transition:opacity .4s;
+        background:rgba(10,14,28,.88);border:2px solid #FFD700;border-radius:40px;padding:12px 24px;color:#fff;font-weight:700;
+        font-size:clamp(14px,3.6vw,20px);text-align:center;max-width:88vw}
+    #hint.show{opacity:1}
     @keyframes pulse { 50% { opacity: 0.5; } }
 </style>
 </head>
@@ -207,12 +211,6 @@
 
 <!-- SCREENS -->
 <div id="loading-screen" class="ui-layer">
-    <div class="loader-video">
-        <video id="tutorial-video" autoplay playsinline muted preload="auto">
-            <source src="howtogame.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-    </div>
     <div class="loader-text">Loading....</div>
 </div>
 <div id="fail-screen" class="ui-layer" style="display:none; opacity:0;"><h2>MISSED!</h2></div>
@@ -233,6 +231,7 @@
     </div>
 </div>
 
+<div id="hint">Drag the glowing ball back, then let go</div>
 <div id="reveal" aria-live="polite"><div class="rv-tag" id="rv-count"></div><div class="rv-name" id="rv-name"></div><div class="rv-line" id="rv-line"></div></div>
 <div id="finish"><div class="fin-card"><h2>All 9 unlocked</h2><p>That's the loop behind every course we build: hook, choice, feedback, retry.</p><p class="fin-cta">Got a document or SOP sitting in a backlog?<br><b>Send us 1 file. We'll build you a free sample module.</b></p><p class="fin-mail">sales@keenminddesigns.com &middot; keenminddesigns.com</p><button class="btn" id="again">Play again</button></div></div>
 <div id="brand">keenmind designs &middot; sample demo</div>
@@ -268,21 +267,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- GAME DATA ---
 const PARTS_DB = [
-    { name: "Hook", line: "Start with a problem the learner already has.", file: "Images/mystery_box2.png" },
-    { name: "Story", line: "A person and a moment beat a list of rules.", file: "Images/mystery_box2.png" },
-    { name: "Choice", line: "Make them decide before you tell them.", file: "Images/mystery_box2.png" },
-    { name: "Consequence", line: "Show what happens next, good or bad.", file: "Images/mystery_box2.png" },
-    { name: "Feedback", line: "Explain why, right after the choice.", file: "Images/mystery_box2.png" },
-    { name: "Score", line: "Track decisions, not just page views.", file: "Images/mystery_box2.png" },
-    { name: "Retry", line: "A safe second go is where learning sticks.", file: "Images/mystery_box2.png" },
-    { name: "Reward", line: "Small wins keep people playing.", file: "Images/mystery_box2.png" },
-    { name: "Recap", line: "End with the one rule to remember.", file: "Images/mystery_box2.png" }
+    { name: "Hook", line: "Start with a problem the learner already has.", file: "Images/box.webp" },
+    { name: "Story", line: "A person and a moment beat a list of rules.", file: "Images/box.webp" },
+    { name: "Choice", line: "Make them decide before you tell them.", file: "Images/box.webp" },
+    { name: "Consequence", line: "Show what happens next, good or bad.", file: "Images/box.webp" },
+    { name: "Feedback", line: "Explain why, right after the choice.", file: "Images/box.webp" },
+    { name: "Score", line: "Track decisions, not just page views.", file: "Images/box.webp" },
+    { name: "Retry", line: "A safe second go is where learning sticks.", file: "Images/box.webp" },
+    { name: "Reward", line: "Small wins keep people playing.", file: "Images/box.webp" },
+    { name: "Recap", line: "End with the one rule to remember.", file: "Images/box.webp" }
 ];
 
 const ASSETS = {
-    'bomb': 'Images/bomb.png',
-    'box': 'Images/mystery_box2.png',
-    'slingshot': 'Images/slingshot_png.png'
+    'bomb': 'Images/bomb.webp',
+    'box': 'Images/box.webp',
+    'slingshot': 'Images/slingshot.webp'
 };
 
 // --- AUDIO CONTROLLER (Web Audio API) ---
@@ -353,7 +352,7 @@ const Resources = {
             let hasCalledCallback = false;
             
             // Add video to loading count
-            total += 1; // for the tutorial video
+            
             
             // Safety timeout: if loading takes more than 10 seconds, proceed anyway
             this.loadTimeout = setTimeout(() => {
@@ -362,7 +361,7 @@ const Resources = {
                     hasCalledCallback = true;
                     if (typeof cb === 'function') cb();
                 }
-            }, 10000);
+            }, 4000);
             
             const checkComplete = () => {
                 c++;
@@ -396,41 +395,7 @@ const Resources = {
                 }
             }
             
-            // Load tutorial video
-            const video = document.getElementById('tutorial-video');
-            if (video) {
-                try {
-                    video.preload = 'auto';
-                    const videoDone = () => {
-                        checkComplete();
-                    };
-                    video.addEventListener('canplaythrough', videoDone, { once: true });
-                    video.addEventListener('error', (e) => {
-                        console.warn('Video loading error:', e);
-                        videoDone();
-                    }, { once: true });
-                    
-                    // Trigger loading by setting source if not already set
-                    if (!video.src) {
-                        const source = video.querySelector('source');
-                        if (source) {
-                            video.load(); // Force video to start loading
-                        } else {
-                            console.warn('No video source found');
-                            videoDone();
-                        }
-                    } else {
-                        video.load(); // Force video to start loading
-                    }
-                    this.videos['tutorial'] = video;
-                } catch (err) {
-                    console.error('Video setup error:', err);
-                    checkComplete();
-                }
-            } else {
-                console.warn('Video element not found');
-                checkComplete();
-            }
+            
         } catch (err) {
             console.error('Resource loading error:', err);
             if (this.loadTimeout) clearTimeout(this.loadTimeout);
@@ -507,22 +472,16 @@ const Game = {
             
             AudioCtrl.init();
             let resizeTimeout;
-            window.addEventListener('resize', () => {
-                try {
-                    const loadingScreen = document.getElementById('loading-screen');
-                    if (loadingScreen) loadingScreen.style.display = 'flex';
-                    clearTimeout(resizeTimeout);
-                    resizeTimeout = setTimeout(() => {
-                        try {
-                            location.reload();
-                        } catch (err) {
-                            console.error('Reload error:', err);
-                        }
-                    }, 500);
-                } catch (err) {
-                    console.error('Resize handler error:', err);
-                }
-            });
+            const onResize = () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    const nowPortrait = window.innerWidth < window.innerHeight;
+                    if (this.portrait !== undefined && nowPortrait !== this.portrait) { location.reload(); }
+                    else { this.fit(); }
+                }, 200);
+            };
+            window.addEventListener('resize', onResize);
+            window.addEventListener('orientationchange', onResize);
             
             ['touchstart','click'].forEach(evt => {
                 window.addEventListener(evt, () => {
@@ -561,12 +520,12 @@ const Game = {
                         console.warn("Error while setting afterloading variable:", err);
                     }
                     
-                    this.showTutorialVideo();
+                    this.startGame();
                 } catch (err) {
                     console.error('Post-load callback error:', err);
                     // Still try to show video
                     try {
-                        this.showTutorialVideo();
+                        this.startGame();
                     } catch (e) {
                         console.error('Failed to show tutorial video:', e);
                         // Fallback: start game directly
@@ -714,7 +673,7 @@ const Game = {
                 if (!this.engine) {
                     throw new Error('Failed to create engine');
                 }
-                this.engine.gravity.y = 1.6;
+                this.engine.gravity.y = 1.6 * (this.scaleFactor || 1);
                 this.world = this.engine.world;
                 this.runner = Runner.create();
                 
@@ -725,6 +684,8 @@ const Game = {
                 Runner.run(this.runner, this.engine);
                 this.isInitialized = true;
                 this.loop();
+                const hintEl = document.getElementById('hint');
+                if (hintEl) { hintEl.classList.add('show'); setTimeout(() => hintEl.classList.remove('show'), 9000); }
             } catch (err) {
                 console.error('Game engine initialization error:', err);
                 throw err;
@@ -739,10 +700,30 @@ const Game = {
         }
     },
 
+    fit: function() {
+        if (!this.canvas) return;
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const k = Math.min(vw / this.width, vh / this.height);
+        const cw = this.width * k, ch = this.height * k;
+        this.canvas.style.width = cw + 'px';
+        this.canvas.style.height = ch + 'px';
+        this.canvas.style.left = ((vw - cw) / 2) + 'px';
+        this.canvas.style.top = (this.portrait ? (vh - ch) : ((vh - ch) / 2)) + 'px';
+    },
+
     calcDimensions: function() {
         try {
-            this.width = window.innerWidth || 1400;
-            this.height = window.innerHeight || 750;
+            const vw = window.innerWidth || 1280, vh = window.innerHeight || 720;
+            const aspect = vw / vh;
+            this.portrait = vw < vh;
+            if (this.portrait) {
+                // Phones/tablets held upright: narrow, tall stage so everything stays on screen
+                this.width = 600;
+                this.height = Math.min(1000, Math.max(800, Math.round(600 / aspect)));
+            } else {
+                this.height = 750;
+                this.width = Math.min(1800, Math.max(750, Math.round(750 * aspect)));
+            }
             
             if (!this.canvas || !this.ctx) {
                 console.error('Canvas not initialized');
@@ -755,8 +736,18 @@ const Game = {
             if(this.scaleFactor < 0.5) this.scaleFactor = 0.5;
             if(isNaN(this.scaleFactor) || this.scaleFactor <= 0) this.scaleFactor = 1;
             
-            this.anchorBase.x = (this.width * 0.18) - 20;
-            this.anchorBase.y = this.height * 0.80;
+            {
+                const pmParam = parseFloat(new URLSearchParams(location.search).get('pm'));
+                this.BOMB_SPEED_SCALE = this.portrait ? 0.5 * (pmParam > 0 ? pmParam : 1) : 0.5;
+            }
+            if (this.portrait) {
+                this.anchorBase.x = this.width * 0.2;
+                this.anchorBase.y = this.height * 0.80;
+            } else {
+                this.anchorBase.x = (this.width * 0.18) - 20;
+                this.anchorBase.y = this.height * 0.80;
+            }
+            this.fit();
             this.currentAnchor = { ...this.anchorBase };
         } catch (err) {
             console.error('Error calculating dimensions:', err);
@@ -855,7 +846,7 @@ const Game = {
             // Center of the grid on the right side
             const gridWidth = (cols - 1) * spacing;
             const gridHeight = (rows - 1) * spacing;
-            const originX = w * 0.7 - gridWidth / 2;
+            const originX = w * (this.portrait ? 0.66 : 0.7) - gridWidth / 2;
             // Place the grid so it sits on the base near the ground line
             const baseHeight = this.GRID_BASE_HEIGHT * s;
             const basePad = this.GRID_BASE_PAD * s;
@@ -949,7 +940,7 @@ const Game = {
             // New attempt starts, reset missed flag
             window.missed = false;
             // Bigger bomb for clearer visuals and collisions
-            const r = 35 * (this.scaleFactor || 1);
+            const r = 35 * (this.portrait ? Math.max(this.scaleFactor || 1, 0.9) : (this.scaleFactor || 1));
             const slingPoint = this.getSlingMetrics().tieMid;
             const anchorX = slingPoint?.x || this.currentAnchor?.x || this.anchorBase?.x || 210;
             const anchorY = slingPoint?.y || this.currentAnchor?.y || this.anchorBase?.y || 600;
@@ -1023,6 +1014,7 @@ const Game = {
             
             Events.on(this.mouseConstraint, 'startdrag', (e) => {
                 try {
+                    const hintEl = document.getElementById('hint'); if (hintEl) hintEl.classList.remove('show');
                     if(AudioCtrl.ctx && AudioCtrl.ctx.state === 'suspended') {
                         AudioCtrl.ctx.resume().catch(err => console.warn('Audio resume failed:', err));
                     }
@@ -1444,7 +1436,7 @@ const Game = {
                     // Clamp how far the bomb can be pulled from the anchor for better aiming
                     const d = Vector.sub(this.projectile.position, slingPoint);
                     const dist = Vector.magnitude(d);
-                    const max = this.MAX_PULL * this.scaleFactor;
+                    const max = this.portrait ? Math.min(this.MAX_PULL * this.scaleFactor, 260) : this.MAX_PULL * this.scaleFactor;
 
                     if (dist > max) {
                         const dir = Vector.normalise(d);
@@ -1462,6 +1454,10 @@ const Game = {
                             y: this.projectile.position.y
                         });
                     }
+                    const pr = this.projectile.position, m = 26;
+                    const cx = Math.min(Math.max(pr.x, m), this.width - m);
+                    const cy = Math.min(Math.max(pr.y, m), this.height - m);
+                    if (cx !== pr.x || cy !== pr.y) Body.setPosition(this.projectile, { x: cx, y: cy });
                 } catch (err) {
                     console.warn('Error in drag handling:', err);
                 }
@@ -1846,7 +1842,7 @@ const Game = {
         for(let i=0; i<steps; i++) { 
             x += vx * 0.8;   // slightly smaller step to increase dot density
             y += vy * 0.8;
-            vy += 1.6 * 0.8; 
+            vy += 1.6 * 0.8 * (this.scaleFactor || 1); 
             if(i > 1) { 
                 if (i <= fadeStart) {
                     ctx.globalAlpha = 1;              // first half: solid
