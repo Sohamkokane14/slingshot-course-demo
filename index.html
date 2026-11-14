@@ -434,7 +434,7 @@ const DemoUI = {
     pages: [
         { t: 'Welcome to Byte Valley!', x: "I'm Coach Cipher, head of village security. Sneaky Phishers keep fishing for our passwords, and last night they went one step further." },
         { t: 'The Stolen Data Eggs', x: "They grabbed our 9 golden data eggs and hid them up high in the valley. Each egg locks away one security lesson. Crack them all open to bring our data home!" },
-        { t: 'Your mission', x: "Pull the slingshot back and fire your red bird at an egg. Then answer the question. Every right answer earns 10 marks. Score 72 or more and you become a Cyber Champion!" }
+        { t: 'Your mission', x: "Pull the slingshot back and fire a bird from the Cyber Squad at an egg, one bird per shot. Then answer the question. Every right answer earns 10 marks. Score 72 or more and you become a Cyber Champion!" }
     ],
     ip: 0, itimer: null, typing: false,
     introInit: function() {
@@ -576,8 +576,16 @@ const PARTS_DB = [
     { name: "Tailgating", q: "A stranger follows you closely through a secure door. What should you do?", o: ["Hold the door, it's polite", "Politely ask who they are and send them to reception", "Ignore them", "Lend them your badge for a minute"], a: 1, w: "Everyone badges in for themselves. Politely redirect visitors to reception.", ic: ["door", "idQ", "eyeOff", "badge"], file: "Images/egg.webp" }
 ];
 
+const BIRD_KEYS = ['bird1','bird2','bird3','bird4','bird5','bird6','bird7'];
+const BIRD_NAMES = ['Firewall','Patch','Zip','Crypto','Cloud','Packet','Pop'];
 const ASSETS = {
-    'bomb': 'Images/bird.webp',
+    'bird1': 'Images/birds/bird1.webp',
+    'bird2': 'Images/birds/bird2.webp',
+    'bird3': 'Images/birds/bird3.webp',
+    'bird4': 'Images/birds/bird4.webp',
+    'bird5': 'Images/birds/bird5.webp',
+    'bird6': 'Images/birds/bird6.webp',
+    'bird7': 'Images/birds/bird7.webp',
     'box': 'Images/egg.webp',
     'villain': 'Images/phisher.webp',
     'slingshot': 'Images/slingshot.webp'
@@ -763,6 +771,7 @@ const Game = {
     isFailing: false,
     touchingCounter: 0, // Used for internal counting to calculate boolean
     tick: 0,
+    birdCount: 0,
 
     mouse: null,
     mouseConstraint: null,
@@ -1261,6 +1270,7 @@ const Game = {
                 throw new Error('Failed to create projectile');
             }
             
+            { const bi = (this.birdCount || 0) % BIRD_KEYS.length; this.projectile.birdKey = BIRD_KEYS[bi]; this.projectile.birdName = BIRD_NAMES[bi]; this.birdCount = (this.birdCount || 0) + 1; }
             this.slingshot = Constraint.create({
                 pointA: slingPoint || this.currentAnchor || this.anchorBase, 
                 bodyB: this.projectile, 
@@ -1792,6 +1802,7 @@ const Game = {
             ctx.clearRect(0, 0, this.width, this.height);
             
             try {
+                this.drawBirdQueue();
                 this.drawSling(false);
                 
                 if (this.world && Composite.allBodies) {
@@ -1818,6 +1829,7 @@ const Game = {
                 // Show trajectory only while actively dragging the bomb
                 if(isDraggingBomb) this.drawTraj();
                 this.drawSling(true);
+                if (!isDraggingBomb) this.drawBirdName();
             } catch (err) {
                 console.error('Error in drawing loop:', err);
             }
@@ -1884,7 +1896,7 @@ const Game = {
             const r = b.circleRadius;
             if (!r || isNaN(r) || r <= 0) return;
             const perspective = this.getPerspectiveScale(b.position.y);
-            const img = Resources.images['bomb'];
+            const img = Resources.images[b.birdKey || 'bird1'];
             ctx.save();
             ctx.translate(b.position.x, b.position.y);
             ctx.scale(perspective, perspective);
@@ -2020,6 +2032,36 @@ const Game = {
         ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y);
         ctx.stroke();
         ctx.restore();
+    },
+    drawBirdQueue: function() {
+        try {
+            const ctx = this.ctx; if (!ctx || this.GameCompleted) return;
+            const s = this.scaleFactor || 1;
+            const groundY = this.height * this.GROUND_Y_RATIO;
+            const ax = this.anchorBase.x, step = 46 * s;
+            const n = Math.max(0, Math.min(3, Math.floor((ax - 26 * s) / step)));
+            const base = this.birdCount || 0, t = performance.now() * 0.001;
+            for (let i = 0; i < n; i++) {
+                const img = Resources.images[BIRD_KEYS[(base + i) % BIRD_KEYS.length]];
+                if (!img || !img.complete || !img.naturalWidth) continue;
+                const d = 44 * s, hop = Math.pow(Math.max(0, Math.sin(t * 3 + i * 1.7)), 10) * 9 * s;
+                ctx.drawImage(img, ax - 58 * s - i * step - d / 2, groundY - d + 4 * s - hop, d, d);
+            }
+        } catch (err) { console.warn('Error drawing bird queue:', err); }
+    },
+    drawBirdName: function() {
+        try {
+            const ctx = this.ctx; if (!ctx || !this.projectile || !this.slingshot || !this.slingshot.bodyB) return;
+            const s = this.scaleFactor || 1, r = this.projectile.circleRadius || 30;
+            const name = (this.projectile.birdName || '').toUpperCase(); if (!name) return;
+            ctx.save();
+            ctx.font = '900 ' + Math.round(15 * Math.max(s, 0.8)) + "px Nunito, system-ui, sans-serif";
+            ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+            ctx.lineWidth = 5 * s; ctx.strokeStyle = 'rgba(42,26,94,.9)'; ctx.fillStyle = '#fff';
+            const x = this.projectile.position.x, y = this.projectile.position.y - r * 1.55;
+            ctx.strokeText(name, x, y); ctx.fillText(name, x, y);
+            ctx.restore();
+        } catch (err) { console.warn('Error drawing bird name:', err); }
     },
     drawSling: function(isFront) {
         const ctx=this.ctx; const s=this.scaleFactor; const sx=this.currentAnchor.x; const sy=this.currentAnchor.y;
