@@ -432,9 +432,9 @@ const DemoUI = {
     },
     /* ---------- intro: coach + cybersecurity story ---------- */
     pages: [
-        { t: 'Welcome to Byte Valley!', x: "I'm Coach Cipher, head of village security. Every day, sneaky Phishers try to steal our passwords and lock us out of our own homes." },
-        { t: 'The Mystery Crates', x: "Last night they hid 9 mystery crates around the valley. Each crate hides a security test. Crack them all and the Phishers lose their grip on Byte Valley." },
-        { t: 'Your mission', x: "Pull the slingshot back and fire your bird at a crate. Then answer the question. Every right answer earns 10 marks. Score 72 or more and you become a Cyber Champion!" }
+        { t: 'Welcome to Byte Valley!', x: "I'm Coach Cipher, head of village security. Sneaky Phishers keep fishing for our passwords, and last night they went one step further." },
+        { t: 'The Stolen Data Eggs', x: "They grabbed our 9 golden data eggs and hid them in a wooden tower. Each egg locks away one security lesson. Crack them all open to bring our data home!" },
+        { t: 'Your mission', x: "Pull the slingshot back and fire your red bird at an egg. Then answer the question. Every right answer earns 10 marks. Score 72 or more and you become a Cyber Champion!" }
     ],
     ip: 0, itimer: null, typing: false,
     introInit: function() {
@@ -565,20 +565,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- GAME DATA ---
 const PARTS_DB = [
-    { name: "Phishing", q: "An email from 'IT Support' asks you to confirm your password through a link. What do you do first?", o: ["Click the link and log in quickly", "Reply with your password to be safe", "Don't click. Report it to the security team", "Forward it to colleagues as a warning"], a: 2, w: "Real IT teams never ask for your password by email. Report it, then delete it.", ic: ["link", "key", "shieldCheck", "forward"], file: "Images/box.webp" },
-    { name: "Passwords", q: "Which password is the hardest to crack?", o: ["Password123!", "Four random words, like tulip-moon-brick-seven", "Your pet's name and birth year", "Your name spelled backwards"], a: 1, w: "Length beats cleverness. A passphrase of 4 or more random words is long and still easy to remember.", ic: ["lockOpen", "words", "paw", "idRev"], file: "Images/box.webp" },
-    { name: "MFA", q: "What does multi-factor authentication (MFA) add to your login?", o: ["A second proof it's really you, on top of the password", "A longer password", "Automatic virus scans", "A backup of your files"], a: 0, w: "Even if a password is stolen, the attacker still needs your second factor.", ic: ["phoneCheck", "lockPlus", "bug", "cloud"], file: "Images/box.webp" },
-    { name: "Public Wi-Fi", q: "You need to check work email at an airport. What is the safest option?", o: ["Join the strongest open Wi-Fi network", "Use any network, since email is encrypted anyway", "Turn off your screen lock to move faster", "Use the company VPN or your phone's hotspot"], a: 3, w: "Open Wi-Fi can be watched or spoofed. A VPN or your own hotspot keeps your traffic private.", ic: ["wifi", "mailLock", "laptopX", "vpn"], file: "Images/box.webp" },
-    { name: "USB drives", q: "You find a USB stick in the car park. What should you do?", o: ["Plug it in to find out who owns it", "Take it home and try it on a personal laptop", "Hand it to IT or security without plugging it in", "Plug it into a spare office PC to be safe"], a: 2, w: "Dropped USB sticks are a classic attack. Never plug in a device you don't trust.", ic: ["usb", "home", "headset", "pc"], file: "Images/box.webp" },
-    { name: "Updates", q: "Why should you install software updates promptly?", o: ["They make the screen brighter", "They fix known security holes that attackers use", "They free up storage by deleting old files", "They are optional and only change themes"], a: 1, w: "Most attacks use flaws that already have a fix. Updating closes the door.", ic: ["sun", "shieldWrench", "trash", "palette"], file: "Images/box.webp" },
-    { name: "CEO fraud", q: "A caller says they're the CEO and urgently asks you to transfer money. What now?", o: ["Do it quickly, it's the CEO", "Ask them to read out their bank details", "Keep it secret, as they asked", "Verify through a separate, known channel before acting"], a: 3, w: "Urgency and secrecy are red flags. Always confirm through a number or channel you already trust.", ic: ["money", "card", "chatX", "call"], file: "Images/box.webp" },
-    { name: "Data leaks", q: "You email a file with customer data to the wrong person. What should you do?", o: ["Report it to security straight away", "Hope they ignore it", "Delete it from your Sent folder", "Ask them to delete it and tell nobody"], a: 0, w: "Fast reporting limits the damage. Hiding a mistake makes it worse.", ic: ["siren", "question", "mailTrash", "chatLock"], file: "Images/box.webp" },
-    { name: "Tailgating", q: "A stranger follows you closely through a secure door. What should you do?", o: ["Hold the door, it's polite", "Politely ask who they are and send them to reception", "Ignore them", "Lend them your badge for a minute"], a: 1, w: "Everyone badges in for themselves. Politely redirect visitors to reception.", ic: ["door", "idQ", "eyeOff", "badge"], file: "Images/box.webp" }
+    { name: "Phishing", q: "An email from 'IT Support' asks you to confirm your password through a link. What do you do first?", o: ["Click the link and log in quickly", "Reply with your password to be safe", "Don't click. Report it to the security team", "Forward it to colleagues as a warning"], a: 2, w: "Real IT teams never ask for your password by email. Report it, then delete it.", ic: ["link", "key", "shieldCheck", "forward"], file: "Images/egg.webp" },
+    { name: "Passwords", q: "Which password is the hardest to crack?", o: ["Password123!", "Four random words, like tulip-moon-brick-seven", "Your pet's name and birth year", "Your name spelled backwards"], a: 1, w: "Length beats cleverness. A passphrase of 4 or more random words is long and still easy to remember.", ic: ["lockOpen", "words", "paw", "idRev"], file: "Images/egg.webp" },
+    { name: "MFA", q: "What does multi-factor authentication (MFA) add to your login?", o: ["A second proof it's really you, on top of the password", "A longer password", "Automatic virus scans", "A backup of your files"], a: 0, w: "Even if a password is stolen, the attacker still needs your second factor.", ic: ["phoneCheck", "lockPlus", "bug", "cloud"], file: "Images/egg.webp" },
+    { name: "Public Wi-Fi", q: "You need to check work email at an airport. What is the safest option?", o: ["Join the strongest open Wi-Fi network", "Use any network, since email is encrypted anyway", "Turn off your screen lock to move faster", "Use the company VPN or your phone's hotspot"], a: 3, w: "Open Wi-Fi can be watched or spoofed. A VPN or your own hotspot keeps your traffic private.", ic: ["wifi", "mailLock", "laptopX", "vpn"], file: "Images/egg.webp" },
+    { name: "USB drives", q: "You find a USB stick in the car park. What should you do?", o: ["Plug it in to find out who owns it", "Take it home and try it on a personal laptop", "Hand it to IT or security without plugging it in", "Plug it into a spare office PC to be safe"], a: 2, w: "Dropped USB sticks are a classic attack. Never plug in a device you don't trust.", ic: ["usb", "home", "headset", "pc"], file: "Images/egg.webp" },
+    { name: "Updates", q: "Why should you install software updates promptly?", o: ["They make the screen brighter", "They fix known security holes that attackers use", "They free up storage by deleting old files", "They are optional and only change themes"], a: 1, w: "Most attacks use flaws that already have a fix. Updating closes the door.", ic: ["sun", "shieldWrench", "trash", "palette"], file: "Images/egg.webp" },
+    { name: "CEO fraud", q: "A caller says they're the CEO and urgently asks you to transfer money. What now?", o: ["Do it quickly, it's the CEO", "Ask them to read out their bank details", "Keep it secret, as they asked", "Verify through a separate, known channel before acting"], a: 3, w: "Urgency and secrecy are red flags. Always confirm through a number or channel you already trust.", ic: ["money", "card", "chatX", "call"], file: "Images/egg.webp" },
+    { name: "Data leaks", q: "You email a file with customer data to the wrong person. What should you do?", o: ["Report it to security straight away", "Hope they ignore it", "Delete it from your Sent folder", "Ask them to delete it and tell nobody"], a: 0, w: "Fast reporting limits the damage. Hiding a mistake makes it worse.", ic: ["siren", "question", "mailTrash", "chatLock"], file: "Images/egg.webp" },
+    { name: "Tailgating", q: "A stranger follows you closely through a secure door. What should you do?", o: ["Hold the door, it's polite", "Politely ask who they are and send them to reception", "Ignore them", "Lend them your badge for a minute"], a: 1, w: "Everyone badges in for themselves. Politely redirect visitors to reception.", ic: ["door", "idQ", "eyeOff", "badge"], file: "Images/egg.webp" }
 ];
 
 const ASSETS = {
     'bomb': 'Images/bird.webp',
-    'box': 'Images/box.webp',
+    'box': 'Images/egg.webp',
+    'villain': 'Images/phisher.webp',
     'slingshot': 'Images/slingshot.webp'
 };
 
@@ -1151,60 +1152,50 @@ const Game = {
 
             // Smart deterministic layout: non-overlapping grid on right side
             const s = this.scaleFactor || 1;
-            // Make targets larger and keep some breathing room between them
+            // Golden data eggs on a wooden tower (shelves are physical, posts and roof are decoration)
             const size = 80 * 2.6 * s * 0.95;
-            const spacing = size * 1.2;
-
-            // Fixed to 3 columns
+            const eggH = size * 0.74, eggW = eggH * 0.77;
+            const shelfT = 24 * s;
+            const spacingX = eggW * 1.1;
+            const spacingY = eggH + shelfT + 4;
             const cols = 3;
             const rows = Math.ceil(PARTS_DB.length / cols);
-
-            // Center of the grid on the right side
-            const gridWidth = (cols - 1) * spacing;
-            const gridHeight = (rows - 1) * spacing;
+            const gridWidth = (cols - 1) * spacingX;
             const originX = w * (this.portrait ? 0.66 : 0.7) - gridWidth / 2;
-            // Place the grid so it sits on the base near the ground line
             const baseHeight = this.GRID_BASE_HEIGHT * s;
-            const basePad = this.GRID_BASE_PAD * s;
             let baseTop = Math.min(h * this.GROUND_Y_RATIO, h - baseHeight);
             let gridBottomTarget = baseTop - (this.GRID_BASE_GAP * s);
-            let originY = gridBottomTarget - (rows - 1) * spacing - size / 2;
-            const minOriginY = (size / 2) + 10 * s;
+            let originY = gridBottomTarget - (rows - 1) * spacingY - eggH / 2;
+            const minOriginY = eggH / 2 + 64 * s;
             if (originY < minOriginY) {
                 originY = minOriginY;
-                gridBottomTarget = originY + (rows - 1) * spacing + size / 2;
+                gridBottomTarget = originY + (rows - 1) * spacingY + eggH / 2;
                 baseTop = Math.min(gridBottomTarget + (this.GRID_BASE_GAP * s), h - baseHeight);
             }
-
-            const baseWidth = gridWidth + size + basePad;
+            const baseWidth = gridWidth + eggW + 70 * s;
             const baseX = originX + gridWidth / 2;
             const baseY = baseTop + baseHeight / 2;
             try {
-                const base = Bodies.rectangle(baseX, baseY, baseWidth, baseHeight, {
-                    isStatic: true,
-                    label: 'grid-base'
-                });
-                Composite.add(this.world, base);
+                Composite.add(this.world, Bodies.rectangle(baseX, baseY, baseWidth, baseHeight, { isStatic: true, label: 'grid-base' }));
+                for (let r = 0; r < rows - 1; r++) {
+                    const cy = originY + r * spacingY + eggH / 2 + 1 + shelfT / 2;
+                    Composite.add(this.world, Bodies.rectangle(baseX, cy, baseWidth - 20 * s, shelfT, { isStatic: true, friction: 0.8, label: 'shelf' }));
+                }
             } catch (err) {
-                console.warn('Error creating grid base:', err);
+                console.warn('Error creating tower:', err);
             }
+            this.tower = { xl: baseX - baseWidth / 2 + 18 * s, xr: baseX + baseWidth / 2 - 18 * s, postW: 22 * s, topY: originY - eggH / 2 - 6 * s, beamT: 22 * s, baseTop: baseTop, eggH: eggH };
 
             PARTS_DB.forEach((part, i) => {
                 try {
                     const col = i % cols;
                     const row = Math.floor(i / cols);
-                    const x = originX + col * spacing;
-                    const y = originY + row * spacing;
-
-                    const t = Bodies.rectangle(
-                        x,
-                        y,
-                        size,
-                        size,
-                        { density: 0.004, friction: 0.6, restitution: 0.3, label: 'target' }
-                    );
+                    const x = originX + col * spacingX;
+                    const y = originY + row * spacingY;
+                    const t = Bodies.rectangle(x, y, eggW, eggH,
+                        { chamfer: { radius: eggW * 0.42 }, density: 0.004, friction: 0.6, restitution: 0.3, label: 'target' });
                     if (t) {
-                        t.partData = part;
+                        t.partData = part; t.eggH = eggH; t.eggW = eggW;
                         this.targets.push(t);
                         Composite.add(this.world, t);
                     }
@@ -1641,7 +1632,7 @@ const Game = {
                 if (typeof confetti === 'function') {
                     confetti({
                         origin: { x: px, y: py },
-                        colors: ['#00E676', '#B7FF76', '#FFD700', '#00C6FF'],
+                        colors: ['#fff6d6', '#ffe08a', '#f6c445', '#ffffff', '#ffb02e'],
                         zIndex: 60,
                         spread: 90,
                         particleCount: 120,
@@ -1817,6 +1808,7 @@ const Game = {
                             if(b.label === 'target') this.drawBox(b);
                             else if(b.label === 'bomb') this.drawBomb(b);
                             else if(b.label === 'grid-base') this.drawGridBase(b);
+                            else if(b.label === 'shelf') this.drawShelf(b);
                             else if(b.label === 'block') this.drawBlock(b);
                         } catch (err) {
                             console.warn('Error drawing body:', err);
@@ -1868,41 +1860,18 @@ const Game = {
     },
     drawBox: function(b) {
         try {
-            if (!b || !b.position || !b.bounds) return;
-            
-            const ctx = this.ctx;
-            if (!ctx) return;
-            
-            const w = b.bounds.max.x - b.bounds.min.x;
-            if (isNaN(w) || w <= 0) return;
-            
+            if (!b || !b.position) return;
+            const ctx = this.ctx; if (!ctx) return;
             const perspective = this.getPerspectiveScale(b.position.y);
-            
-            ctx.save(); 
+            ctx.save();
             ctx.translate(b.position.x, b.position.y);
-            ctx.scale(perspective, perspective * this.PERSPECTIVE_SQUASH);
+            ctx.scale(perspective, perspective);
             ctx.rotate(b.angle || 0);
-
-            // No visual highlighting of any single box
-            ctx.shadowBlur = 0;
-
             const img = Resources.images['box'];
-            if (img && img.complete) {
-                try {
-                    const iw = img.naturalWidth || img.width;
-                    const ih = img.naturalHeight || img.height;
-                    if (iw && ih) {
-                        // Preserve aspect ratio: scale uniformly so the larger side fits the physics box
-                        const scale = w / Math.max(iw, ih);
-                        const dw = iw * scale;
-                        const dh = ih * scale;
-                        ctx.drawImage(img, -dw/2, -dh/2, dw, dh);
-                    } else {
-                        ctx.drawImage(img, -w/2, -w/2, w, w);
-                    }
-                } catch (err) {
-                    console.warn('Error drawing box image:', err);
-                }
+            if (img && img.complete && img.naturalWidth) {
+                const dh = (b.eggH || 120) * 1.06;
+                const dw = dh * img.naturalWidth / img.naturalHeight;
+                ctx.drawImage(img, -dw / 2, -dh / 2, dw, dh);
             }
             ctx.restore();
         } catch (err) {
@@ -1941,31 +1910,59 @@ const Game = {
         }
         ctx.restore();
     },
+    rrPath: function(ctx, x, y, ww, hh, rad) {
+        ctx.beginPath(); ctx.moveTo(x + rad, y); ctx.lineTo(x + ww - rad, y); ctx.quadraticCurveTo(x + ww, y, x + ww, y + rad);
+        ctx.lineTo(x + ww, y + hh - rad); ctx.quadraticCurveTo(x + ww, y + hh, x + ww - rad, y + hh); ctx.lineTo(x + rad, y + hh);
+        ctx.quadraticCurveTo(x, y + hh, x, y + hh - rad); ctx.lineTo(x, y + rad); ctx.quadraticCurveTo(x, y, x + rad, y); ctx.closePath();
+    },
+    plank: function(ctx, x0, y0, w, h, s, vertical) {
+        const g = vertical ? ctx.createLinearGradient(x0, 0, x0 + w, 0) : ctx.createLinearGradient(0, y0, 0, y0 + h);
+        g.addColorStop(0, '#f0b868'); g.addColorStop(0.5, '#cf8a3e'); g.addColorStop(1, '#a8672c');
+        ctx.fillStyle = g; ctx.strokeStyle = '#3a2230'; ctx.lineWidth = 3 * s;
+        this.rrPath(ctx, x0, y0, w, h, Math.min(7 * s, Math.min(w, h) / 2)); ctx.fill(); ctx.stroke();
+        ctx.strokeStyle = 'rgba(58,34,48,.4)'; ctx.lineWidth = 2 * s;
+        if (!vertical) {
+            for (let x = x0 + 84 * s; x < x0 + w - 30 * s; x += 84 * s) { ctx.beginPath(); ctx.moveTo(x, y0 + 4 * s); ctx.lineTo(x, y0 + h - 4 * s); ctx.stroke(); }
+            ctx.strokeStyle = 'rgba(255,236,190,.65)'; ctx.lineWidth = 2.5 * s;
+            ctx.beginPath(); ctx.moveTo(x0 + 10 * s, y0 + 6 * s); ctx.lineTo(x0 + w - 10 * s, y0 + 6 * s); ctx.stroke();
+            ctx.fillStyle = '#5a3a1a';
+            [x0 + 14 * s, x0 + w - 14 * s].forEach(nx => { ctx.beginPath(); ctx.arc(nx, y0 + h / 2, 2.6 * s, 0, 6.28); ctx.fill(); });
+        } else {
+            for (let y = y0 + 90 * s; y < y0 + h - 30 * s; y += 90 * s) { ctx.beginPath(); ctx.moveTo(x0 + 3 * s, y); ctx.lineTo(x0 + w - 3 * s, y); ctx.stroke(); }
+        }
+    },
+    drawShelf: function(b) {
+        try {
+            if (!b || !b.bounds) return;
+            const ctx = this.ctx; if (!ctx) return;
+            const s = this.scaleFactor || 1;
+            ctx.save();
+            this.plank(ctx, b.bounds.min.x, b.bounds.min.y, b.bounds.max.x - b.bounds.min.x, b.bounds.max.y - b.bounds.min.y, s, false);
+            ctx.restore();
+        } catch (err) { console.warn('Error drawing shelf:', err); }
+    },
     drawGridBase: function(b) {
         try {
             if (!b || !b.position || !b.bounds) return;
             const ctx = this.ctx; if (!ctx) return;
             const s = this.scaleFactor || 1;
-            const x0 = b.bounds.min.x - 6 * s, x1 = b.bounds.max.x + 6 * s;
-            const y0 = b.bounds.min.y, th = 26 * s, w = x1 - x0, r = 7 * s;
-            const rr = (x, y, ww, hh, rad) => {
-                ctx.beginPath(); ctx.moveTo(x + rad, y); ctx.lineTo(x + ww - rad, y); ctx.quadraticCurveTo(x + ww, y, x + ww, y + rad);
-                ctx.lineTo(x + ww, y + hh - rad); ctx.quadraticCurveTo(x + ww, y + hh, x + ww - rad, y + hh); ctx.lineTo(x + rad, y + hh);
-                ctx.quadraticCurveTo(x, y + hh, x, y + hh - rad); ctx.lineTo(x, y + rad); ctx.quadraticCurveTo(x, y, x + rad, y); ctx.closePath();
-            };
+            const T = this.tower;
             ctx.save();
+            if (T) {
+                const top = T.topY - T.beamT;
+                [T.xl, T.xr].forEach(px => this.plank(ctx, px - T.postW / 2, top, T.postW, T.baseTop - top, s, true));
+                this.plank(ctx, T.xl - T.postW / 2 - 8 * s, top, (T.xr - T.xl) + T.postW + 16 * s, T.beamT, s, false);
+                const vimg = Resources.images['villain'];
+                if (vimg && vimg.complete && vimg.naturalWidth) {
+                    const vh = T.eggH * 0.66, vw = vh * vimg.naturalWidth / vimg.naturalHeight;
+                    ctx.drawImage(vimg, T.xr - vw * 0.78, top - vh + 8 * s, vw, vh);
+                }
+            }
+            const x0 = b.bounds.min.x - 6 * s, x1 = b.bounds.max.x + 6 * s;
+            const y0 = b.bounds.min.y, th = 26 * s, w = x1 - x0;
             ctx.fillStyle = 'rgba(30,60,20,.28)';
             ctx.beginPath(); ctx.ellipse((x0 + x1) / 2, y0 + th + 2 * s, w / 2, 7 * s, 0, 0, 6.28); ctx.fill();
-            const g = ctx.createLinearGradient(0, y0, 0, y0 + th);
-            g.addColorStop(0, '#f0b868'); g.addColorStop(0.5, '#cf8a3e'); g.addColorStop(1, '#a8672c');
-            ctx.fillStyle = g; ctx.strokeStyle = '#3a2230'; ctx.lineWidth = 3 * s;
-            rr(x0, y0, w, th, r); ctx.fill(); ctx.stroke();
-            ctx.strokeStyle = 'rgba(58,34,48,.42)'; ctx.lineWidth = 2 * s;
-            for (let x = x0 + 84 * s; x < x1 - 30 * s; x += 84 * s) { ctx.beginPath(); ctx.moveTo(x, y0 + 4 * s); ctx.lineTo(x, y0 + th - 4 * s); ctx.stroke(); }
-            ctx.strokeStyle = 'rgba(255,236,190,.65)'; ctx.lineWidth = 2.5 * s;
-            ctx.beginPath(); ctx.moveTo(x0 + 10 * s, y0 + 6 * s); ctx.lineTo(x1 - 10 * s, y0 + 6 * s); ctx.stroke();
-            ctx.fillStyle = '#5a3a1a';
-            [x0 + 14 * s, x1 - 14 * s].forEach(nx => { ctx.beginPath(); ctx.arc(nx, y0 + th / 2, 2.6 * s, 0, 6.28); ctx.fill(); });
+            this.plank(ctx, x0, y0, w, th, s, false);
             ctx.restore();
         } catch (err) {
             console.warn('Error drawing grid base:', err);
