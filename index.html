@@ -433,7 +433,7 @@ const DemoUI = {
     /* ---------- intro: coach + cybersecurity story ---------- */
     pages: [
         { t: 'Welcome to Byte Valley!', x: "I'm Coach Cipher, head of village security. Sneaky Phishers keep fishing for our passwords, and last night they went one step further." },
-        { t: 'The Stolen Data Eggs', x: "They grabbed our 9 golden data eggs and hid them in a wooden tower. Each egg locks away one security lesson. Crack them all open to bring our data home!" },
+        { t: 'The Stolen Data Eggs', x: "They grabbed our 9 golden data eggs and hid them up high in the valley. Each egg locks away one security lesson. Crack them all open to bring our data home!" },
         { t: 'Your mission', x: "Pull the slingshot back and fire your red bird at an egg. Then answer the question. Every right answer earns 10 marks. Score 72 or more and you become a Cyber Champion!" }
     ],
     ip: 0, itimer: null, typing: false,
@@ -1176,10 +1176,10 @@ const Game = {
             const baseX = originX + gridWidth / 2;
             const baseY = baseTop + baseHeight / 2;
             try {
-                Composite.add(this.world, Bodies.rectangle(baseX, baseY, baseWidth, baseHeight, { isStatic: true, label: 'grid-base' }));
+                Composite.add(this.world, Bodies.rectangle(baseX, baseY, baseWidth, baseHeight, { isStatic: true, label: 'grid-base', collisionFilter: { category: 0x0004, mask: 0x0001 } }));
                 for (let r = 0; r < rows - 1; r++) {
                     const cy = originY + r * spacingY + eggH / 2 + 1 + shelfT / 2;
-                    Composite.add(this.world, Bodies.rectangle(baseX, cy, baseWidth - 20 * s, shelfT, { isStatic: true, friction: 0.8, label: 'shelf' }));
+                    Composite.add(this.world, Bodies.rectangle(baseX, cy, baseWidth - 20 * s, shelfT, { isStatic: true, friction: 0.8, label: 'shelf', collisionFilter: { category: 0x0004, mask: 0x0001 } }));
                 }
             } catch (err) {
                 console.warn('Error creating tower:', err);
@@ -1807,8 +1807,7 @@ const Game = {
                             }
                             if(b.label === 'target') this.drawBox(b);
                             else if(b.label === 'bomb') this.drawBomb(b);
-                            else if(b.label === 'grid-base') this.drawGridBase(b);
-                            else if(b.label === 'shelf') this.drawShelf(b);
+                            // supports are invisible: only the eggs are shown
                             else if(b.label === 'block') this.drawBlock(b);
                         } catch (err) {
                             console.warn('Error drawing body:', err);

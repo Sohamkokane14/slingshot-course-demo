@@ -1,6 +1,6 @@
 # Cyber Squad Slingshot Quiz (sample demo)
 
-A small browser game by keenmind designs. Coach Cipher briefs you on a cybersecurity mission, then you fire a red bird from a slingshot at 9 golden data eggs stacked in a wooden tower guarded by a Phisher. Each egg opens one security question with 4 answers. Right answers score 10 marks, wrong answers reveal the correct one.
+A small browser game by keenmind designs. Coach Cipher briefs you on a cybersecurity mission, then you fire a red bird from a slingshot at 9 golden data eggs. Each egg opens one security question with 4 answers. Right answers score 10 marks, wrong answers reveal the correct one.
 
 All artwork is original vector art made for this demo. Built with HTML5 canvas, Matter.js and canvas-confetti. No build step. Sample demo, not client work.
 
