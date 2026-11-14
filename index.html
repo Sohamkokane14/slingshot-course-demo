@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Cyber Security Slingshot Quiz - a keenmind designs demo</title>
+<title>Cyber Squad Slingshot Quiz - a keenmind designs demo</title>
 
 <!-- Matter.js Physics Engine -->
 <script src="lib/matter.min.js"></script>
 <!-- Confetti Effect -->
 <script src="lib/confetti.browser.min.js"></script>
-<link rel="preload" as="image" href="Images/bg-light.webp">
+<link rel="preload" as="image" href="Images/bg-meadow.webp">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/barlow-condensed-latin-700-normal.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/barlow-latin-500-normal.woff2">
 
@@ -32,7 +32,7 @@
         width: 100%;
         height: 100%;
         background-color: #dff0ff;
-        background-image: url('Images/bg-light.webp');
+        background-image: url('Images/bg-meadow.webp');
         background-size: cover;
         background-position: center bottom;
         background-repeat: no-repeat;
@@ -186,95 +186,124 @@
     }
 
 
-    :root{--ink:#14213d;--paper:#fffdf8;--line:#d9d3c4;--brand:#3d2a86;--amber:#e39a2d;--ok:#2e8b57;--bad:#c8453b;--mute:#5b6479}
-    body{font-family:'Barlow',system-ui,-apple-system,'Segoe UI',Arial,sans-serif}
-    #hud2{position:fixed;left:0;right:0;top:0;z-index:45;display:flex;justify-content:space-between;align-items:flex-start;padding:12px 14px;pointer-events:none;color:var(--ink)}
-    .stat{display:flex;flex-direction:column;gap:3px;background:rgba(255,253,248,.92);border:1.5px solid var(--ink);border-radius:6px;padding:6px 13px 7px;min-width:78px}
-    .stat .lbl{font:700 11px/1 'Barlow Condensed',sans-serif;letter-spacing:2.5px;color:var(--mute)}
-    .stat b{font:800 clamp(24px,5.4vw,32px)/1 'Barlow Condensed',sans-serif;color:var(--ink)}
-    .stat small{font-size:.55em;color:var(--mute);font-weight:700;margin-left:4px}
-    #steps{position:absolute;left:50%;top:20px;transform:translateX(-50%);display:flex;gap:4px}
-    #steps i{display:block;width:clamp(15px,2.6vw,24px);height:9px;background:rgba(255,253,248,.92);border:1.5px solid var(--ink);border-radius:2px}
-    #steps i.on{background:#f2c14e}
-    #steps i.ok{background:var(--ok)}
-    #steps i.no{background:var(--bad)}
-    @media (max-width:520px){#steps{top:74px}}
-    #hint{position:fixed;left:50%;top:clamp(96px,13vh,128px);transform:translateX(-50%);z-index:45;pointer-events:none;opacity:0;transition:opacity .4s;
-        background:rgba(255,253,248,.94);border:1.5px solid var(--ink);border-radius:6px;padding:7px 14px;color:var(--ink);font:700 clamp(14px,3.6vw,17px)/1.2 'Barlow Condensed',sans-serif;letter-spacing:1.6px;text-transform:uppercase;text-align:center;max-width:92vw}
-    #hint.show{opacity:1}
-    @media (orientation:landscape){#hint{left:3vw;top:auto;bottom:38%;transform:none;max-width:27vw;text-align:left}}
+    :root{--ink:#2a1a5e;--mute:#6a5aa0;--lav:#d9c9ff;--p1:#7d52e6;--p2:#5a32bf;--p3:#43229a;--navy:#1d1b4a;--ok:#2e9f55;--bad:#d03a2a;--amber:#f5a623;--gqp:calc(var(--cw) * .342 - 22px);--cw:clamp(150px,16vw,210px);--side:clamp(26px,3vw,44px)}
     @font-face{font-family:'Nunito';font-weight:800;font-display:swap;src:url(fonts/nunito-latin-800-normal.woff2) format('woff2')}
     @font-face{font-family:'Nunito';font-weight:900;font-display:swap;src:url(fonts/nunito-latin-900-normal.woff2) format('woff2')}
-    :root{--navy:#1d1b4a;--ordk:#4a2400;--cw:clamp(150px,16vw,210px);--gqp:calc(var(--cw) * .342 - 22px);--side:clamp(26px,3vw,44px)}
-    #quiz{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(58,62,72,.68);-webkit-backdrop-filter:grayscale(1) blur(1.5px);backdrop-filter:grayscale(1) blur(1.5px);z-index:70;touch-action:manipulation}
-    #quiz.show{display:flex}
+    body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Arial,sans-serif}
     @keyframes rise{from{transform:translateY(34px);opacity:0}to{transform:none;opacity:1}}
     @keyframes pop{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:none}}
-    .gq{position:relative;width:min(1080px,95vw);margin:0;padding-top:var(--gqp);filter:drop-shadow(0 0 3px rgba(255,214,120,.95)) drop-shadow(0 0 26px rgba(255,190,60,.55)) drop-shadow(0 26px 40px rgba(0,0,0,.55));animation:rise .34s cubic-bezier(.2,1.25,.4,1);font-family:'Nunito',system-ui,sans-serif;color:var(--navy)}
-    .crest{position:absolute;left:50%;top:0;transform:translateX(-50%);width:var(--cw);height:auto;z-index:3;pointer-events:none;filter:drop-shadow(0 4px 0 rgba(0,0,0,.25))}
-    .frame{position:relative;background:linear-gradient(#524f90,#2c2a5e);padding:32px clamp(14px,2.4vw,28px) clamp(22px,2.6vw,30px);clip-path:polygon(22px 0,calc(100% - 22px) 0,100% 22px,100% calc(100% - 22px),calc(100% - 22px) 100%,22px 100%,0 calc(100% - 22px),0 22px);box-shadow:inset 0 0 0 3px #8c8ad2,inset 0 0 0 6px #1f1d4a;max-height:calc(88vh - var(--gqp));overflow:auto}
-    .head{position:absolute;left:0;right:0;top:calc(var(--gqp) - 17px);display:flex;justify-content:space-between;align-items:center;padding:0 var(--side);pointer-events:none;z-index:4}
-    .pill{padding:2px;background:#7472bc;clip-path:polygon(16px 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,16px 100%,0 50%);filter:drop-shadow(0 3px 0 rgba(0,0,0,.3))}
-    .pi{display:flex;align-items:center;gap:8px;background:linear-gradient(#37356f,#26245a);color:#fff;padding:5px 26px;min-height:32px;font:800 clamp(14px,1.7vw,19px)/1 'Barlow Condensed',sans-serif;letter-spacing:.5px;text-transform:uppercase;clip-path:polygon(15px 0,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,15px 100%,0 50%)}
-    .pi em{font-style:normal;color:#ffc83d;margin-left:.1em}
-    .pi b{color:#ffc83d;font-weight:800}
-    .pi svg{width:1.15em;height:1.15em;flex:none}
-    .banner{background:linear-gradient(#ffcf4a,#ef7f19);padding:3px;clip-path:polygon(26px 0,calc(100% - 26px) 0,100% 50%,calc(100% - 26px) 100%,26px 100%,0 50%);margin-bottom:8px}
-    .bin{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;min-height:clamp(46px,4.6vw,58px);padding:4px clamp(34px,5vw,60px);background:linear-gradient(#fffaf0,#f7dfb6);clip-path:polygon(24px 0,calc(100% - 24px) 0,100% 50%,calc(100% - 24px) 100%,24px 100%,0 50%)}
+    @keyframes bob{50%{transform:translateY(-9px)}}
+    /* ---- HUD ---- */
+    #hud2{position:fixed;left:0;right:0;top:0;z-index:45;display:flex;justify-content:space-between;align-items:flex-start;padding:12px 14px;pointer-events:none}
+    .stat{display:flex;flex-direction:column;gap:1px;background:linear-gradient(#8a5cf0,#5a32bf);border:3px solid var(--lav);border-radius:16px;padding:5px 14px 6px;min-width:84px;color:#fff;box-shadow:0 4px 0 rgba(42,26,94,.45),0 0 14px rgba(150,110,255,.5)}
+    .stat .lbl{font:800 11px/1 'Barlow Condensed',sans-serif;letter-spacing:2.5px;color:var(--lav)}
+    .stat b{font:900 clamp(22px,5vw,30px)/1 'Nunito',sans-serif;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+    .stat small{font:800 .55em 'Nunito',sans-serif;color:var(--lav);margin-left:4px}
+    #steps{position:absolute;left:50%;top:18px;transform:translateX(-50%);display:flex;gap:5px}
+    #steps i{display:block;width:clamp(15px,2.6vw,24px);height:11px;border-radius:7px;background:rgba(255,255,255,.88);border:2.5px solid var(--p2)}
+    #steps i.on{background:#ffd24f}
+    #steps i.ok{background:#37b36b;border-color:#1f7d49}
+    #steps i.no{background:#e5483b;border-color:#a42a20}
+    @media (max-width:520px){#steps{top:74px}}
+    #hint{position:fixed;left:50%;top:clamp(96px,13vh,128px);transform:translateX(-50%);z-index:45;pointer-events:none;opacity:0;transition:opacity .4s;background:#fff;border:3px solid var(--p1);border-radius:18px;padding:8px 18px;color:var(--ink);font:900 clamp(14px,3.4vw,18px)/1.2 'Nunito',sans-serif;text-align:center;max-width:92vw;box-shadow:0 4px 0 rgba(42,26,94,.35)}
+    #hint.show{opacity:1}
+    @media (orientation:landscape){#hint{left:3vw;top:auto;bottom:40%;transform:none;max-width:25vw;text-align:left}}
+    /* ---- question box (purple, like the reference) ---- */
+    #quiz{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(58,62,72,.68);-webkit-backdrop-filter:grayscale(1) blur(1.5px);backdrop-filter:grayscale(1) blur(1.5px);z-index:70;touch-action:manipulation}
+    #quiz.show{display:flex}
+    .gq{position:relative;width:min(1080px,95vw);margin:0;padding-top:var(--gqp);filter:drop-shadow(0 0 3px rgba(235,220,255,.95)) drop-shadow(0 0 24px rgba(170,130,255,.7)) drop-shadow(0 24px 36px rgba(0,0,0,.5));animation:rise .34s cubic-bezier(.2,1.25,.4,1);color:var(--ink)}
+    .crest{position:absolute;left:50%;top:0;transform:translateX(-50%);width:var(--cw);height:auto;z-index:3;pointer-events:none}
+    .frame{position:relative;background:linear-gradient(#8156ea,#5a32bf 55%,#43229a);border:6px solid var(--lav);border-radius:34px;padding:34px clamp(14px,2.4vw,28px) clamp(26px,3vw,34px);box-shadow:inset 0 0 0 3px rgba(255,255,255,.28);max-height:calc(88vh - var(--gqp));overflow:auto}
+    .head{position:absolute;left:0;right:0;top:calc(var(--gqp) - 18px);display:flex;justify-content:space-between;align-items:center;padding:0 var(--side);pointer-events:none;z-index:4}
+    .pill{padding:3px;border-radius:999px;background:linear-gradient(#d4f3ff,#59c9ff);box-shadow:0 4px 0 rgba(0,0,0,.28)}
+    .pill.r{background:linear-gradient(#ffd0f2,#ff6fd0)}
+    .pi{display:flex;align-items:center;gap:8px;padding:6px 24px;min-height:34px;border-radius:999px;background:linear-gradient(#27b2ff,#0f6fd8);color:#fff;font:900 clamp(13px,1.7vw,19px)/1 'Nunito',sans-serif;text-transform:uppercase;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+    .pill.r .pi{background:linear-gradient(#ff5fc8,#c52ba0)}
+    .pi em{font-style:normal;color:#ffe27a;margin-left:.15em}
+    .pi b{color:#ffe27a;font-weight:900}
+    .pi svg{width:1.2em;height:1.2em;flex:none}
+    .banner{background:linear-gradient(#ffd75a,#ef7f19);padding:3px;clip-path:polygon(26px 0,calc(100% - 26px) 0,100% 50%,calc(100% - 26px) 100%,26px 100%,0 50%);margin-bottom:10px}
+    .bin{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;min-height:clamp(48px,4.8vw,62px);padding:5px clamp(34px,5vw,60px);background:linear-gradient(#fffaf0,#ffe9c2);clip-path:polygon(24px 0,calc(100% - 24px) 0,100% 50%,calc(100% - 24px) 100%,24px 100%,0 50%)}
     .bin::after{content:"";position:absolute;left:28px;right:28px;bottom:4px;height:3px;background:linear-gradient(90deg,transparent,#f0821a 20%,#f0821a 80%,transparent)}
-    #qtext{font:800 clamp(15px,1.8vw,22px)/1.2 'Nunito',sans-serif;color:var(--navy)}
-    .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px clamp(14px,2vw,22px)}
+    #qtext{font:900 clamp(15px,1.9vw,23px)/1.2 'Nunito',sans-serif;color:var(--navy)}
+    .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px clamp(14px,2vw,22px)}
     @media (max-width:640px){.opts{grid-template-columns:1fr}}
-    .opt{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:2px solid #fff;border-radius:16px 24px 24px 16px;padding:4px 16px 4px 6px;min-height:clamp(38px,3.8vw,46px);background:linear-gradient(#fffaf0,#f4dbb0);box-shadow:0 3px 0 #b99a68,0 6px 10px rgba(0,0,0,.28);cursor:pointer;font:800 clamp(14px,1.5vw,18px)/1.2 'Nunito',sans-serif;color:var(--navy);animation:pop .34s cubic-bezier(.2,1.4,.4,1) both}
+    .opt{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:3px solid #ffd36a;border-radius:999px;padding:4px 8px 4px 7px;min-height:clamp(46px,4.8vw,58px);background:linear-gradient(#fffaf0,#ffe9c8);box-shadow:0 4px 0 #c79a52,0 8px 12px rgba(0,0,0,.28);cursor:pointer;font:900 clamp(14px,1.55vw,19px)/1.2 'Nunito',sans-serif;color:var(--navy);animation:pop .34s cubic-bezier(.2,1.4,.4,1) both}
     .opts .opt:nth-child(1){animation-delay:.04s}.opts .opt:nth-child(2){animation-delay:.1s}.opts .opt:nth-child(3){animation-delay:.16s}.opts .opt:nth-child(4){animation-delay:.22s}
-    .bdg{flex:none;width:clamp(30px,3vw,36px);aspect-ratio:1/1.1;display:grid;place-items:center;background:linear-gradient(#fff,#e8a23a);clip-path:polygon(24% 4%,76% 4%,100% 50%,76% 96%,24% 96%,0 50%)}
-    .bdg i{display:grid;place-items:center;width:84%;height:84%;background:linear-gradient(#ffd24f,#f08a1c);clip-path:polygon(24% 4%,76% 4%,100% 50%,76% 96%,24% 96%,0 50%);font:900 clamp(15px,1.7vw,20px)/1 'Nunito',sans-serif;font-style:normal;color:var(--navy)}
-    .opt:hover:not(:disabled){background:linear-gradient(#fff,#ffe9bf);transform:translateY(-1px)}
-    .opt:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 #b99a68,0 3px 6px rgba(0,0,0,.28)}
+    .opt .t{flex:1}
+    .bdg{flex:none;width:clamp(32px,3.4vw,42px);aspect-ratio:1/1.1;display:grid;place-items:center;background:linear-gradient(#fff,#e8a23a);clip-path:polygon(24% 4%,76% 4%,100% 50%,76% 96%,24% 96%,0 50%)}
+    .bdg i{display:grid;place-items:center;width:84%;height:84%;background:linear-gradient(#ffd24f,#f08a1c);clip-path:polygon(24% 4%,76% 4%,100% 50%,76% 96%,24% 96%,0 50%);font:900 clamp(15px,1.8vw,22px)/1 'Nunito',sans-serif;font-style:normal;color:var(--navy)}
+    .ico{flex:none;width:clamp(52px,5.6vw,70px);height:clamp(36px,3.8vw,46px);display:grid;place-items:center;border-radius:999px 999px 999px 999px;background:linear-gradient(#eef6ff,#cfe3fb);border:2px solid #fff}
+    .ico svg{width:72%;height:88%}
+    .opt:hover:not(:disabled){background:linear-gradient(#fff,#fff0d2);transform:translateY(-1px)}
+    .opt:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 #c79a52,0 4px 8px rgba(0,0,0,.28)}
     .opt.lock{background:linear-gradient(#ffe08a,#f5a623);border-color:#fff2c4}
-    .opt.right{background:linear-gradient(#86e195,#2f9f4c);border-color:#d8ffd9;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.28);box-shadow:0 3px 0 #1d6b33,0 6px 10px rgba(0,0,0,.28)}
-    .opt.wrong{background:linear-gradient(#f58a6e,#c8341f);border-color:#ffd8cf;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.3);box-shadow:0 3px 0 #8c1f12,0 6px 10px rgba(0,0,0,.28)}
+    .opt.right{background:linear-gradient(#86e195,#2f9f4c);border-color:#d8ffd9;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.28);box-shadow:0 4px 0 #1d6b33,0 8px 12px rgba(0,0,0,.28)}
+    .opt.wrong{background:linear-gradient(#f58a6e,#c8341f);border-color:#ffd8cf;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.3);box-shadow:0 4px 0 #8c1f12,0 8px 12px rgba(0,0,0,.28)}
+    .opt.right .ico,.opt.wrong .ico{visibility:hidden}
     .opt:disabled{cursor:default}
     .opt.pulse{animation:blinkp .5s 3}
     @keyframes blinkp{50%{filter:brightness(1.25)}}
-    .mk{display:none;margin-left:auto;flex:none;width:22px;height:22px}
+    .mk{display:none;position:absolute;right:20px;top:50%;margin-top:-14px;width:28px;height:28px}
     .opt.right .ck,.opt.wrong .xx{display:block}
-    .fbk{display:none;margin-top:8px;padding:6px 12px;background:rgba(0,0,0,.28);border-left:5px solid #ffc83d;color:#fff;font:700 clamp(13px,1.4vw,15px)/1.3 'Nunito',sans-serif}
+    .fbk{display:none;margin-top:10px;padding:8px 14px;background:rgba(30,10,80,.45);border-left:5px solid #ffd24f;border-radius:12px;color:#fff;font:800 clamp(13px,1.4vw,15px)/1.35 'Nunito',sans-serif}
     .fbk.show{display:block;animation:pop .3s ease-out both}
-    .fbk .v{font:800 clamp(15px,1.8vw,19px)/1 'Barlow Condensed',sans-serif;letter-spacing:2px;text-transform:uppercase;margin-right:8px}
+    .fbk .v{font:900 clamp(15px,1.8vw,19px)/1 'Nunito',sans-serif;letter-spacing:1.5px;text-transform:uppercase;margin-right:8px}
     .fbk .v.ok{color:#8bf0a0}.fbk .v.no{color:#ff9d88}
-    .gbtn{display:none;position:absolute;right:var(--side);bottom:-12px;z-index:5;border:3px solid var(--ordk);border-radius:14px;cursor:pointer;background:linear-gradient(#ffd24f,#f08a1c);color:var(--navy);font:800 clamp(16px,1.8vw,20px)/1 'Barlow Condensed',sans-serif;letter-spacing:3px;text-transform:uppercase;padding:8px 28px;box-shadow:0 4px 0 #8a4300}
+    .gbtn{display:none;position:absolute;right:var(--side);bottom:-14px;z-index:5;border:3px solid #4a2400;border-radius:999px;cursor:pointer;background:linear-gradient(#ffd24f,#f08a1c);color:var(--navy);font:900 clamp(15px,1.7vw,19px)/1 'Nunito',sans-serif;letter-spacing:1.5px;text-transform:uppercase;padding:9px 30px;box-shadow:0 4px 0 #8a4300}
     .gbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #8a4300}
+    .tab{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);width:clamp(130px,16vw,190px);height:clamp(22px,2.6vw,28px);background:linear-gradient(#7d52e6,#4b2aa8);border:3px solid var(--lav);border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px;z-index:3}
+    .tab i{display:block;width:clamp(18px,2.6vw,28px);height:8px;border-radius:5px;background:linear-gradient(#ffe27a,#f0a21f)}
+    .tab i:last-child{background:#a79bd6}
     @media (max-width:640px){
       .head{top:calc(var(--gqp) + 26px);padding:0 22px}
-      .pi{min-height:28px;padding:4px 14px;font-size:12.5px}
+      .pi{min-height:28px;padding:4px 14px;font-size:12px}
       .frame{padding:64px 14px 30px}
-      .bin{min-height:48px;padding:4px 26px}
+      .bin{min-height:46px;padding:4px 26px}
       #qtext{font-size:15px}
       .opts{gap:7px}
-      .opt{min-height:40px;padding:3px 12px 3px 5px;font-size:14px}
+      .opt{min-height:42px;padding:3px 6px 3px 5px;font-size:14px;gap:8px}
       .bdg{width:30px}.bdg i{font-size:15px}
+      .ico{width:46px;height:32px}
       .fbk{font-size:13px;padding:6px 10px}
       .gbtn{right:14px}
     }
-    .tab{position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);width:clamp(130px,16vw,190px);height:clamp(20px,2.4vw,26px);background:#2a285a;border:3px solid #7472bc;clip-path:polygon(0 0,100% 0,88% 100%,12% 100%);display:flex;align-items:center;justify-content:center;gap:6px;z-index:3}
-    .tab i{display:block;width:clamp(16px,2.2vw,26px);height:7px;background:linear-gradient(#ffd24f,#f08a1c);transform:skewX(-30deg)}
-    .shead{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;padding:9px 18px;font:700 clamp(13px,3vw,15px)/1 'Barlow Condensed',sans-serif;letter-spacing:2.5px;text-transform:uppercase}
-    .shead i{font-style:normal;color:#f2c14e}
-    .go{display:none;margin:14px 0 0 auto;border:0;cursor:pointer;background:var(--ink);color:#fff;border-radius:6px;padding:12px 28px;font:800 17px/1 'Barlow Condensed',sans-serif;letter-spacing:3px;text-transform:uppercase}
-    .go:hover{background:var(--brand)}
-    #finish{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(20,33,61,.5);z-index:80}
+    /* ---- intro (coach) ---- */
+    #intro{position:fixed;inset:0;z-index:90;display:none;background:linear-gradient(rgba(40,20,110,.18),rgba(40,20,110,.04))}
+    #intro.show{display:block}
+    .coachwrap{position:absolute;left:clamp(8px,3vw,50px);bottom:clamp(40px,11vh,120px);width:clamp(170px,30vw,400px);pointer-events:none;animation:bob 2.8s ease-in-out infinite}
+    .coachwrap img{display:block;width:100%;height:auto;filter:drop-shadow(0 12px 8px rgba(0,0,0,.25))}
+    .bubble{position:absolute;left:clamp(190px,36vw,480px);right:clamp(12px,5vw,90px);top:clamp(16px,13vh,130px);background:#fffaf0;border:5px solid var(--p2);border-radius:30px;padding:clamp(14px,2.4vw,26px);box-shadow:0 8px 0 rgba(42,26,94,.35),0 0 34px rgba(120,80,230,.45);animation:pop .4s both}
+    .bubble::before{content:"";position:absolute;left:-34px;top:62%;border:17px solid transparent;border-right:30px solid var(--p2);border-left:0}
+    .bubble::after{content:"";position:absolute;left:-23px;top:calc(62% + 5px);border:12px solid transparent;border-right:22px solid #fffaf0;border-left:0}
+    .nm{display:inline-block;background:linear-gradient(#8a5cf0,#5a32bf);color:#fff;border-radius:999px;padding:4px 16px;font:900 clamp(12px,1.5vw,15px) 'Nunito',sans-serif;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+    .ttl{font:900 clamp(22px,3.4vw,36px)/1.1 'Nunito',sans-serif;margin:0 0 8px;color:var(--ink)}
+    .txt{font:800 clamp(15px,1.95vw,21px)/1.45 'Nunito',sans-serif;min-height:6.2em;color:#3b2a78;margin:0}
+    .ibar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
+    .dots i{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--lav);margin-right:6px}.dots i.on{background:var(--p1)}
+    .skip{background:none;border:0;color:var(--mute);font:800 15px 'Nunito',sans-serif;cursor:pointer;text-decoration:underline;margin-right:10px}
+    .cta{border:3px solid #4a2400;border-radius:999px;background:linear-gradient(#ffd24f,#f08a1c);color:var(--navy);font:900 clamp(15px,1.9vw,19px) 'Nunito',sans-serif;padding:10px 28px;cursor:pointer;box-shadow:0 4px 0 #8a4300;text-transform:uppercase;letter-spacing:1px}
+    .cta:active{transform:translateY(3px);box-shadow:0 1px 0 #8a4300}
+    @media (max-width:700px){
+      .bubble{left:12px;right:12px;top:6vh}
+      .bubble::before,.bubble::after{display:none}
+      .coachwrap{width:min(50vw,240px);bottom:7vh;left:3vw}
+      .txt{min-height:8.6em}
+    }
+    /* ---- result screen ---- */
+    #finish{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(58,62,72,.68);-webkit-backdrop-filter:grayscale(1) blur(1.5px);backdrop-filter:grayscale(1) blur(1.5px);z-index:80}
     #finish.show{display:flex}
-    .slip{width:min(520px,92vw);background:var(--paper);border:2px solid var(--ink);border-radius:8px;box-shadow:0 18px 50px rgba(20,33,61,.4);overflow:auto;max-height:94vh;color:var(--ink);text-align:center}
-    .slip .shead{justify-content:center}
-    .slip .in{padding:20px 26px 24px}
-    .slip .marks{font:800 clamp(72px,18vw,104px)/1 'Barlow Condensed',sans-serif;color:var(--ink)}
-    .slip .marks small{font-size:.36em;color:var(--mute);font-weight:700;margin-left:8px}
-    .slip .grade{display:inline-block;border:2.5px solid var(--brand);color:var(--brand);padding:5px 18px;font:800 20px/1 'Barlow Condensed',sans-serif;letter-spacing:3px;transform:rotate(-2deg);margin:6px 0 12px}
-    .slip p{font:500 17px/1.45 'Barlow',sans-serif;color:var(--mute);margin:8px 0}
-    .slip .cta{color:var(--ink)}.slip .mail{color:var(--brand);font-weight:700;margin-bottom:16px}
-    .slip .go{display:inline-block;margin:0}
-    #brand{position:fixed;right:14px;bottom:10px;z-index:40;font:700 13px 'Barlow Condensed',sans-serif;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.95);text-shadow:0 1px 3px rgba(0,0,0,.5);pointer-events:none}
+    .fin{display:flex;gap:14px;align-items:center;width:min(660px,94vw);background:linear-gradient(#8156ea,#43229a);border:6px solid var(--lav);border-radius:30px;padding:20px 24px 22px 14px;color:#fff;max-height:94vh;overflow:auto;filter:drop-shadow(0 0 22px rgba(170,130,255,.7)) drop-shadow(0 20px 30px rgba(0,0,0,.5));animation:pop .4s both}
+    .fin img{flex:none;width:clamp(100px,22vw,170px);height:auto}
+    .fin .tx{flex:1;text-align:center}
+    .fin .tag{font:900 13px 'Nunito',sans-serif;letter-spacing:3px;color:#e1d4ff}
+    .fin .marks{font:900 clamp(56px,12vw,84px)/1 'Nunito',sans-serif;color:#ffd24f;text-shadow:0 4px 0 #8a4a00}
+    .fin .marks small{font-size:.38em;color:#e1d4ff;text-shadow:none;margin-left:6px}
+    .fin .grade{display:inline-block;background:linear-gradient(#ffe27a,#f0a21f);color:#3b1c00;border:3px solid #7a4a00;border-radius:999px;padding:6px 20px;font:900 17px 'Nunito',sans-serif;letter-spacing:1.5px;text-transform:uppercase;margin:4px 0 8px}
+    .fin p{font:800 15px/1.4 'Nunito',sans-serif;color:#efe7ff;margin:6px 0}
+    .fin .mail{color:#ffe27a;margin-bottom:12px}
+    @media (max-width:560px){.fin{flex-direction:column;padding:16px}.fin img{width:110px}}
+    #brand{position:fixed;right:14px;bottom:10px;z-index:40;font:800 13px 'Nunito',sans-serif;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.95);text-shadow:0 1px 3px rgba(0,0,0,.55);pointer-events:none}
     .loader-text{color:var(--ink)}
     @keyframes pulse { 50% { opacity: 0.5; } }
 </style>
@@ -310,17 +339,25 @@
     </div>
 </div>
 
-<div id="hint">Pull back, let go. Burst a box to get a question.</div>
+<div id="hint">Pull the bird back, then let go!</div>
+<div id="intro" role="dialog" aria-modal="true" aria-label="Intro from Coach Cipher"><div class="coachwrap"><img src="Images/coach.webp" alt="Coach Cipher"></div>
+<div class="bubble"><span class="nm">Coach Cipher</span><h2 class="ttl" id="itl"></h2><p class="txt" id="itx" aria-live="polite"></p>
+<div class="ibar"><div class="dots" id="idots"></div><div><button class="skip" id="iskip" type="button">Skip</button><button class="cta" id="inext" type="button">Next</button></div></div></div></div>
+<script>try{window.DemoIntroOpen=sessionStorage.getItem('introSeen')!=='1'}catch(e){window.DemoIntroOpen=true}if(window.DemoIntroOpen)document.getElementById('intro').classList.add('show');</script>
 <div id="hud2"><div class="stat"><span class="lbl">MARKS</span><b id="sc">0</b></div><div id="steps"></div><div class="stat"><span class="lbl">QUESTION</span><b><span id="qn">0</span><small>/ 9</small></b></div></div>
-<svg style="position:absolute;width:0;height:0" aria-hidden="true"><defs><linearGradient id="og" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd24f"/><stop offset="1" stop-color="#f0821a"/></linearGradient></defs></svg>
 <div id="quiz" role="dialog" aria-modal="true"><div class="gq">
-<svg class="crest" viewBox="0 0 380 130" aria-hidden="true"><path d="M10 44 H140 L170 80 H58 Z" fill="url(#og)" stroke="#4a2400" stroke-width="4" stroke-linejoin="round"/><path d="M370 44 H240 L210 80 H322 Z" fill="url(#og)" stroke="#4a2400" stroke-width="4" stroke-linejoin="round"/><polygon points="190,6 240,34 240,92 190,120 140,92 140,34" fill="#2d2b5e" stroke="#ffb52e" stroke-width="9" stroke-linejoin="round"/><polygon points="190,16 231,39 231,87 190,110 149,87 149,39" fill="none" stroke="#4c4a8a" stroke-width="3"/><text x="190" y="84" text-anchor="middle" font-size="62" font-weight="900" fill="#ffc933" stroke="#3a1d00" stroke-width="3" paint-order="stroke" font-family="Nunito,system-ui,sans-serif">?</text></svg>
-<div class="head"><div class="pill"><div class="pi"><span id="qmeta"></span></div></div><div class="pill"><div class="pi"><svg viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7-6.3-3.6-6.3 3.6 1.5-7L2 9.3l7-.8z" fill="#ffc83d" stroke="#4a2400" stroke-width="1.4" stroke-linejoin="round"/></svg><span><b>10</b> Points</span></div></div></div>
+<svg class="crest" viewBox="0 0 380 130" aria-hidden="true"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset="1" stop-color="#f0a21f"/></linearGradient><linearGradient id="cpu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a6cff"/><stop offset="1" stop-color="#5a2fc4"/></linearGradient></defs>
+<g id="wing"><path d="M140 66 C112 40 64 30 14 42 C38 50 56 58 66 68 C46 68 30 72 14 84 C46 82 76 88 94 100 C82 100 72 104 64 112 C100 112 130 100 148 86 Z" fill="url(#cg)" stroke="#7a4a00" stroke-width="4" stroke-linejoin="round"/><path d="M40 52 C70 58 100 64 128 74 M34 70 C66 74 96 80 124 88" fill="none" stroke="#c9801a" stroke-width="3" stroke-linecap="round" opacity=".7"/></g>
+<use href="#wing" transform="translate(380 0) scale(-1 1)"/>
+<path d="M190 6 C214 16 234 18 248 18 V60 C248 92 222 112 190 124 C158 112 132 92 132 60 V18 C146 18 166 16 190 6 Z" fill="url(#cpu)" stroke="#ffc83d" stroke-width="8" stroke-linejoin="round"/>
+<path d="M190 18 C210 26 226 28 236 28 V60 C236 84 216 100 190 110 C164 100 144 84 144 60 V28 C154 28 170 26 190 18 Z" fill="none" stroke="#c7b0ff" stroke-width="3"/>
+<text x="190" y="82" text-anchor="middle" font-size="60" font-weight="900" fill="#ffd24f" stroke="#4a2400" stroke-width="3.5" paint-order="stroke" font-family="Nunito,system-ui,sans-serif">?</text></svg>
+<div class="head"><div class="pill"><div class="pi"><span id="qmeta"></span></div></div><div class="pill r"><div class="pi"><svg viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7-6.3-3.6-6.3 3.6 1.5-7L2 9.3l7-.8z" fill="#ffd24f" stroke="#7a4a00" stroke-width="1.4" stroke-linejoin="round"/></svg><span><b>10</b> Points</span></div></div></div>
 <div class="frame"><div class="banner"><div class="bin"><span id="qtext"></span></div></div>
 <div class="opts" id="qopts"></div><div class="fbk" id="qres"></div></div>
 <button class="gbtn" id="qnext">Next</button>
 <div class="tab"><i></i><i></i><i></i></div></div></div>
-<div id="finish"><div class="slip"><div class="shead">Result</div><div class="in"><div class="marks"><span id="fscore"></span><small>/ 90</small></div><div class="grade" id="fbadge"></div><p id="fmsg"></p><p class="cta">Want training like this built from your own policies?<br><b>Send us 1 file. We'll build you a free sample module.</b></p><p class="mail">sales@keenminddesigns.com &middot; keenminddesigns.com</p><button class="go" id="again">Play again</button></div></div></div>
+<div id="finish"><div class="fin"><img src="Images/coach.webp" alt="Coach Cipher"><div class="tx"><div class="tag">TRAINING COMPLETE</div><div class="marks"><span id="fscore"></span><small>/ 90</small></div><div class="grade" id="fbadge"></div><p id="fmsg"></p><p>Want training like this built from your own policies?<br><b>Send us 1 file. We'll build you a free sample module.</b></p><p class="mail">sales@keenminddesigns.com &middot; keenminddesigns.com</p><button class="cta" id="again">Play again</button></div></div></div>
 <div id="brand">keenmind designs &middot; sample demo</div>
 
 
@@ -330,6 +367,52 @@ window.isBirdTouchingBox = false;      // True when bomb is touching a box
 window.currentComponentName = "";      // Name of last successfully hit component
 window.missed = false;                 // True if last shot missed the active box
 window.GameCompleted = false;          // Set to true when all targets are recovered
+
+const IC = (function () {
+  const D = '#2b2a5a', S = 'stroke="#2b2a5a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
+  const I = {};
+  I.link = `<g transform="rotate(-35 32 32)"><rect x="6" y="23" width="32" height="18" rx="9" fill="none" stroke="#3b8cf0" stroke-width="7"/><rect x="26" y="23" width="32" height="18" rx="9" fill="none" stroke="#8a5cf0" stroke-width="7"/></g>`;
+  I.key = `<circle cx="20" cy="32" r="13" fill="#ffc233" ${S}/><circle cx="20" cy="32" r="4.5" fill="#fff"/><path d="M33 32 H58 M48 32 V42 M56 32 V39" fill="none" stroke="#ffc233" stroke-width="7" stroke-linecap="round"/><path d="M33 32 H58" fill="none" stroke="${D}" stroke-width="1.5" opacity=".5"/>`;
+  I.shieldCheck = `<path d="M32 5 L55 13 V31 C55 46 45 55 32 60 C19 55 9 46 9 31 V13 Z" fill="#37b36b" ${S}/><path d="M20 32 l8 8 l17 -18" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`;
+  I.forward = `<rect x="6" y="14" width="38" height="28" rx="5" fill="#fff" ${S}/><path d="M7 17 L25 31 L43 17" fill="none" ${S}/><path d="M38 50 H58 M49 41 L58 50 L49 59" fill="none" stroke="#e5483b" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
+  I.lockOpen = `<path d="M20 30 V20 a11 11 0 0 1 22 0 V24" fill="none" stroke="#8b94ab" stroke-width="7" stroke-linecap="round"/><rect x="12" y="30" width="40" height="28" rx="6" fill="#e5483b" ${S}/><circle cx="32" cy="43" r="4" fill="#fff"/>`;
+  I.words = `<rect x="4" y="17" width="56" height="30" rx="9" fill="#37b36b" ${S}/><text x="32" y="39" text-anchor="middle" font-family="Nunito,Arial" font-weight="900" font-size="19" fill="#fff">aB#9</text>`;
+  I.paw = `<ellipse cx="32" cy="42" rx="14" ry="11" fill="#b9772f" ${S}/><circle cx="14" cy="28" r="6" fill="#b9772f" ${S}/><circle cx="26" cy="18" r="6" fill="#b9772f" ${S}/><circle cx="38" cy="18" r="6" fill="#b9772f" ${S}/><circle cx="50" cy="28" r="6" fill="#b9772f" ${S}/>`;
+  I.idRev = `<rect x="5" y="14" width="54" height="34" rx="6" fill="#fff" ${S}/><circle cx="18" cy="28" r="6" fill="#8b94ab"/><path d="M12 42 q6 -7 12 0" fill="#8b94ab"/><path d="M32 24 H52 M32 31 H48" stroke="#8b94ab" stroke-width="4" stroke-linecap="round"/><path d="M46 56 a10 10 0 1 1 10 -10 M56 46 l-2 -8 l-7 4" fill="none" stroke="#e5483b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" transform="translate(-6 0)"/>`;
+  I.phoneCheck = `<rect x="16" y="4" width="28" height="52" rx="7" fill="#3b8cf0" ${S}/><rect x="20" y="11" width="20" height="34" rx="2" fill="#dff0ff"/><circle cx="46" cy="44" r="14" fill="#37b36b" ${S}/><path d="M39 44 l5 5 l9 -10" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  I.lockPlus = `<path d="M14 30 V21 a10 10 0 0 1 20 0 V30" fill="none" stroke="#8b94ab" stroke-width="7" stroke-linecap="round"/><rect x="8" y="30" width="38" height="27" rx="6" fill="#ffc233" ${S}/><circle cx="27" cy="43" r="4" fill="#7a4a00"/><circle cx="48" cy="18" r="11" fill="#37b36b" ${S}/><path d="M48 12 V24 M42 18 H54" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>`;
+  I.bug = `<ellipse cx="30" cy="38" rx="14" ry="17" fill="#e5483b" ${S}/><circle cx="30" cy="18" r="8" fill="#e5483b" ${S}/><path d="M16 30 H6 M16 40 H6 M16 50 L8 56 M44 30 H54 M44 40 H54" stroke="${D}" stroke-width="3.5" stroke-linecap="round"/><path d="M30 24 V54" stroke="${D}" stroke-width="2.5"/><circle cx="46" cy="46" r="10" fill="#e8f4ff" ${S}/><path d="M53 53 L60 60" stroke="${D}" stroke-width="5" stroke-linecap="round"/>`;
+  I.cloud = `<path d="M18 46 a12 12 0 0 1 0 -24 a16 16 0 0 1 30 4 a10 10 0 0 1 0 20 Z" fill="#8fc4ff" ${S}/><path d="M32 52 V30 M24 38 L32 30 L40 38" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
+  I.wifi = `<g fill="none" stroke="#3b8cf0" stroke-width="7" stroke-linecap="round"><path d="M6 26 a37 37 0 0 1 52 0"/><path d="M15 36 a24 24 0 0 1 34 0"/><path d="M24 46 a11 11 0 0 1 16 0"/></g><circle cx="32" cy="55" r="5" fill="#3b8cf0"/>`;
+  I.mailLock = `<rect x="4" y="14" width="46" height="34" rx="6" fill="#3b8cf0" ${S}/><path d="M5 18 L27 35 L49 18" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><rect x="34" y="34" width="24" height="22" rx="5" fill="#ffc233" ${S}/><path d="M39 34 V30 a7 7 0 0 1 14 0 V34" fill="none" stroke="${D}" stroke-width="3.5"/><circle cx="46" cy="45" r="3" fill="#7a4a00"/>`;
+  I.laptopX = `<rect x="10" y="12" width="44" height="30" rx="4" fill="#8fc4ff" ${S}/><path d="M3 48 H61 L56 42 H8 Z" fill="#b9c1d6" ${S}/><rect x="25" y="22" width="14" height="11" rx="2" fill="#ffc233" ${S}/><path d="M28 22 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="${D}" stroke-width="2.5"/><path d="M8 8 L56 52" stroke="#e5483b" stroke-width="6" stroke-linecap="round"/>`;
+  I.vpn = `<rect x="4" y="16" width="40" height="28" rx="4" fill="#8fc4ff" ${S}/><path d="M0 50 H48 L44 44 H4 Z" fill="#b9c1d6" ${S}/><path d="M42 8 L58 14 V28 C58 38 51 44 42 48 C33 44 26 38 26 28 V14 Z" fill="#3b8cf0" ${S}/><text x="42" y="31" text-anchor="middle" font-family="Nunito,Arial" font-weight="900" font-size="11" fill="#fff">VPN</text>`;
+  I.usb = `<rect x="14" y="24" width="30" height="26" rx="5" fill="#8b94ab" ${S}/><rect x="44" y="30" width="16" height="14" rx="2" fill="#ffc233" ${S}/><rect x="49" y="34" width="3" height="6" fill="#7a4a00"/><rect x="54" y="34" width="3" height="6" fill="#7a4a00"/><circle cx="24" cy="37" r="4" fill="#fff"/>`;
+  I.home = `<path d="M8 32 L32 8 L56 32" fill="none" stroke="#e5483b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 30 V56 H50 V30 L32 14 Z" fill="#ffd89a" ${S}/><rect x="26" y="38" width="12" height="18" rx="2" fill="#b9772f" ${S}/>`;
+  I.headset = `<circle cx="32" cy="28" r="16" fill="#ffd0a8" ${S}/><path d="M13 30 a19 19 0 0 1 38 0" fill="none" stroke="#3b8cf0" stroke-width="7" stroke-linecap="round"/><rect x="8" y="26" width="9" height="16" rx="4" fill="#3b8cf0" ${S}/><rect x="47" y="26" width="9" height="16" rx="4" fill="#3b8cf0" ${S}/><path d="M52 40 q0 10 -14 10" fill="none" stroke="${D}" stroke-width="3.5" stroke-linecap="round"/><circle cx="26" cy="29" r="2.5" fill="${D}"/><circle cx="38" cy="29" r="2.5" fill="${D}"/><path d="M26 38 q6 5 12 0" fill="none" stroke="${D}" stroke-width="3" stroke-linecap="round"/><path d="M8 62 q0 -12 24 -12 q24 0 24 12 Z" fill="#37b36b" ${S}/>`;
+  I.pc = `<rect x="6" y="8" width="52" height="34" rx="5" fill="#8fc4ff" ${S}/><path d="M24 42 L22 54 H42 L40 42" fill="#b9c1d6" ${S}/><rect x="16" y="54" width="32" height="6" rx="3" fill="#8b94ab" ${S}/><path d="M14 18 H34 M14 26 H28" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`;
+  I.sun = `<g stroke="#f0a21f" stroke-width="5" stroke-linecap="round"><path d="M32 4 V12 M32 52 V60 M4 32 H12 M52 32 H60 M12 12 L18 18 M46 46 L52 52 M52 12 L46 18 M18 46 L12 52"/></g><circle cx="32" cy="32" r="14" fill="#ffd24f" ${S}/>`;
+  I.shieldWrench = `<path d="M32 5 L55 13 V31 C55 46 45 55 32 60 C19 55 9 46 9 31 V13 Z" fill="#3b8cf0" ${S}/><path d="M42 22 a9 9 0 0 1 -13 9 L19 42 a4 4 0 0 1 -5 -5 L25 27 a9 9 0 0 1 9 -13 l-6 6 l4 4 Z" fill="#fff" stroke="${D}" stroke-width="2.5" stroke-linejoin="round" transform="translate(4 2)"/>`;
+  I.trash = `<path d="M14 20 L18 58 H46 L50 20 Z" fill="#8b94ab" ${S}/><rect x="9" y="12" width="46" height="8" rx="4" fill="#b9c1d6" ${S}/><path d="M26 8 H38 V12 H26 Z" fill="#b9c1d6" ${S}/><path d="M25 28 V50 M32 28 V50 M39 28 V50" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>`;
+  I.palette = `<path d="M32 6 C14 6 4 18 4 32 C4 48 16 58 30 58 C36 58 36 52 32 48 C28 44 32 40 38 40 H50 C58 40 60 34 60 28 C60 16 48 6 32 6 Z" fill="#ffd89a" ${S}/><circle cx="18" cy="30" r="5" fill="#e5483b"/><circle cx="28" cy="18" r="5" fill="#3b8cf0"/><circle cx="42" cy="18" r="5" fill="#37b36b"/><circle cx="50" cy="30" r="5" fill="#8a5cf0"/>`;
+  I.money = `<path d="M22 16 Q32 8 42 16 L38 24 H26 Z" fill="#b9772f" ${S}/><path d="M26 24 C6 34 6 58 32 58 C58 58 58 34 38 24 Z" fill="#ffc233" ${S}/><text x="32" y="50" text-anchor="middle" font-family="Nunito,Arial" font-weight="900" font-size="26" fill="#7a4a00">$</text>`;
+  I.card = `<rect x="4" y="12" width="56" height="38" rx="6" fill="#3b8cf0" ${S}/><rect x="4" y="21" width="56" height="8" fill="#2b2a5a"/><rect x="11" y="36" width="14" height="9" rx="2" fill="#ffc233" ${S}/><path d="M34 41 H52" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`;
+  I.chatX = `<path d="M8 10 H56 a4 4 0 0 1 4 4 V38 a4 4 0 0 1 -4 4 H30 L18 54 V42 H8 a4 4 0 0 1 -4 -4 V14 a4 4 0 0 1 4 -4 Z" fill="#fff" ${S}/><path d="M24 17 L40 33 M40 17 L24 33" stroke="#e5483b" stroke-width="6" stroke-linecap="round"/>`;
+  I.call = `<path d="M14 8 L24 6 L30 20 L22 26 C26 36 30 40 40 44 L46 36 L60 42 L58 52 C56 58 48 60 40 58 C20 52 8 38 6 18 C5 12 8 8 14 8 Z" fill="#37b36b" ${S}/><circle cx="48" cy="18" r="12" fill="#fff" ${S}/><path d="M42 18 l5 5 l9 -10" fill="none" stroke="#37b36b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  I.siren = `<path d="M16 46 V30 a16 16 0 0 1 32 0 V46 Z" fill="#e5483b" ${S}/><rect x="10" y="46" width="44" height="12" rx="4" fill="#8b94ab" ${S}/><path d="M24 30 a8 8 0 0 1 6 -7" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><g stroke="#ffc233" stroke-width="4.5" stroke-linecap="round"><path d="M4 18 L10 22 M60 18 L54 22 M32 2 V8"/></g>`;
+  I.question = `<circle cx="32" cy="32" r="26" fill="#b9c1d6" ${S}/><text x="32" y="45" text-anchor="middle" font-family="Nunito,Arial" font-weight="900" font-size="38" fill="#fff" stroke="#2b2a5a" stroke-width="2" paint-order="stroke">?</text>`;
+  I.mailTrash = `<rect x="4" y="10" width="40" height="30" rx="5" fill="#fff" ${S}/><path d="M5 13 L24 28 L43 13" fill="none" ${S}/><path d="M34 40 L36 60 H54 L56 40 Z" fill="#8b94ab" ${S}/><rect x="31" y="34" width="28" height="6" rx="3" fill="#b9c1d6" ${S}/>`;
+  I.chatLock = `<path d="M6 8 H44 a4 4 0 0 1 4 4 V32 a4 4 0 0 1 -4 4 H26 L14 46 V36 H6 a4 4 0 0 1 -4 -4 V12 a4 4 0 0 1 4 -4 Z" fill="#fff" ${S}/><rect x="34" y="34" width="26" height="24" rx="5" fill="#ffc233" ${S}/><path d="M40 34 V30 a7 7 0 0 1 14 0 V34" fill="none" stroke="${D}" stroke-width="3.5"/><circle cx="47" cy="46" r="3.2" fill="#7a4a00"/>`;
+  I.door = `<path d="M10 56 V8 H44 V56 Z" fill="#b9772f" ${S}/><path d="M44 8 L58 14 V52 L44 56 Z" fill="#8a5524" ${S}/><circle cx="36" cy="34" r="3" fill="#ffd24f"/><path d="M4 58 H60" stroke="${D}" stroke-width="3" stroke-linecap="round"/>`;
+  I.idQ = `<rect x="6" y="10" width="52" height="44" rx="7" fill="#fff" ${S}/><circle cx="20" cy="28" r="7" fill="#8b94ab"/><path d="M10 46 q10 -12 20 0" fill="#8b94ab"/><text x="45" y="42" text-anchor="middle" font-family="Nunito,Arial" font-weight="900" font-size="30" fill="#e5483b" stroke="#2b2a5a" stroke-width="1.2" paint-order="stroke">?</text>`;
+  I.eyeOff = `<path d="M4 32 Q32 8 60 32 Q32 56 4 32 Z" fill="#fff" ${S}/><circle cx="32" cy="32" r="10" fill="#3b8cf0" ${S}/><circle cx="32" cy="32" r="4" fill="#1a0f1e"/><path d="M8 56 L56 8" stroke="#e5483b" stroke-width="6" stroke-linecap="round"/>`;
+  I.badge = `<path d="M24 2 V14 M40 2 V14" stroke="#8a5cf0" stroke-width="5" stroke-linecap="round"/><rect x="12" y="14" width="40" height="46" rx="7" fill="#fff" ${S}/><circle cx="32" cy="29" r="7" fill="#8b94ab"/><path d="M20 48 q12 -14 24 0" fill="#8b94ab"/><path d="M20 55 H44" stroke="#3b8cf0" stroke-width="4" stroke-linecap="round"/>`;
+  return {
+    names: Object.keys(I),
+    svg: function (n) { return `<svg viewBox="0 0 64 64" aria-hidden="true">${I[n] || I.question}</svg>`; }
+  };
+})();
+
 
 const DemoUI = {
     score: 0, answered: 0, queue: [], open: false, pending: false, completed: false, locked: false,
@@ -343,6 +426,50 @@ const DemoUI = {
     markCurrent: function() {
         this.steps().forEach((e, i) => e.classList.toggle('on', i === this.answered && !e.classList.contains('ok') && !e.classList.contains('no')));
     },
+    showHint: function() {
+        const h = this.el('hint'); if (!h) return;
+        h.classList.add('show'); setTimeout(() => h.classList.remove('show'), 9000);
+    },
+    /* ---------- intro: coach + cybersecurity story ---------- */
+    pages: [
+        { t: 'Welcome to Byte Valley!', x: "I'm Coach Cipher, head of village security. Every day, sneaky Phishers try to steal our passwords and lock us out of our own homes." },
+        { t: 'The Mystery Crates', x: "Last night they hid 9 mystery crates around the valley. Each crate hides a security test. Crack them all and the Phishers lose their grip on Byte Valley." },
+        { t: 'Your mission', x: "Pull the slingshot back and fire your bird at a crate. Then answer the question. Every right answer earns 10 marks. Score 72 or more and you become a Cyber Champion!" }
+    ],
+    ip: 0, itimer: null, typing: false,
+    introInit: function() {
+        if (!window.DemoIntroOpen) return;
+        this.el('inext').addEventListener('click', () => this.introNext());
+        this.el('iskip').addEventListener('click', () => this.introClose());
+        this.el('itx').addEventListener('click', () => { if (this.typing) this.typeDone(); });
+        this.introRender();
+    },
+    introRender: function() {
+        const p = this.pages[this.ip];
+        this.el('itl').textContent = p.t;
+        this.el('inext').textContent = this.ip === this.pages.length - 1 ? 'Start training' : 'Next';
+        this.el('idots').innerHTML = this.pages.map((_, i) => '<i class="' + (i === this.ip ? 'on' : '') + '"></i>').join('');
+        this.typeText(p.x);
+    },
+    typeText: function(t) {
+        clearInterval(this.itimer); this.full = t; this.typing = true;
+        const box = this.el('itx'); box.textContent = ''; let n = 0;
+        this.itimer = setInterval(() => { n += 2; box.textContent = t.slice(0, n); if (n >= t.length) this.typeDone(); }, 22);
+    },
+    typeDone: function() { clearInterval(this.itimer); this.typing = false; this.el('itx').textContent = this.full; },
+    introNext: function() {
+        if (this.typing) { this.typeDone(); return; }
+        if (this.ip >= this.pages.length - 1) { this.introClose(); return; }
+        this.ip++; this.introRender();
+    },
+    introClose: function() {
+        clearInterval(this.itimer);
+        this.el('intro').classList.remove('show');
+        window.DemoIntroOpen = false;
+        try { sessionStorage.setItem('introSeen', '1'); } catch (e) {}
+        this.showHint();
+    },
+    /* ---------- questions ---------- */
     ask: function(part) {
         if (!part || !part.q) return;
         this.queue.push(part);
@@ -362,14 +489,14 @@ const DemoUI = {
         this.open = true; this.locked = false;
         try { Game.isPaused = true; } catch (e) {}
         this.markCurrent();
-        { const hh = document.getElementById('hint'); if (hh) hh.classList.remove('show'); }
+        { const hh = this.el('hint'); if (hh) hh.classList.remove('show'); }
         this.el('qmeta').innerHTML = 'Question <em>' + (this.answered + 1) + ' of 9</em>';
         this.el('qtext').textContent = part.q;
         const box = this.el('qopts'); box.innerHTML = '';
         part.o.forEach((t, i) => {
             const b = document.createElement('button');
             b.className = 'opt'; b.type = 'button';
-            b.innerHTML = '<span class="bdg"><i>' + 'ABCD'[i] + '</i></span><span class="t"></span>' +
+            b.innerHTML = '<span class="bdg"><i>' + 'ABCD'[i] + '</i></span><span class="t"></span><span class="ico">' + IC.svg((part.ic || [])[i]) + '</span>' +
                 '<svg class="mk ck" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
                 '<svg class="mk xx" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg>';
             b.querySelector('.t').textContent = t;
@@ -395,7 +522,7 @@ const DemoUI = {
                 this.score += 10; this.el('sc').textContent = this.score;
                 if (step) step.classList.add('ok');
                 res.className = 'fbk show';
-                res.innerHTML = '<span class="v ok">Correct</span>+10 points. ' + part.w;
+                res.innerHTML = '<span class="v ok">Correct</span>+10 marks. ' + part.w;
                 try { AudioCtrl.tone('ok'); } catch (e) {}
             } else {
                 btns[i].classList.add('wrong'); btns[part.a].classList.add('right', 'pulse');
@@ -419,9 +546,9 @@ const DemoUI = {
     showFinish: function() {
         const pct = this.score / 90;
         const badge = pct >= 0.8 ? 'Cyber Champion' : (pct >= 0.5 ? 'Security Aware' : 'Keep Practising');
-        const msg = pct >= 0.8 ? 'You spot the traps. Teach your team what you know.'
-                  : (pct >= 0.5 ? 'A solid base. A few more habits and you are there.'
-                                : 'Every miss is a lesson. Play again and beat your score.');
+        const msg = pct >= 0.8 ? 'Brilliant! You spotted every trap. Teach your team what you know.'
+                  : (pct >= 0.5 ? 'Solid work, recruit. A few more habits and you are there.'
+                                : 'Every miss is a lesson. Play again and beat your score!');
         this.el('fbadge').textContent = badge;
         this.el('fscore').textContent = this.score;
         this.el('fmsg').textContent = msg;
@@ -431,25 +558,26 @@ const DemoUI = {
 };
 document.addEventListener('DOMContentLoaded', () => {
     DemoUI.initSteps();
+    DemoUI.introInit();
     const a = document.getElementById('again'); if (a) a.addEventListener('click', () => location.reload());
     const n = document.getElementById('qnext'); if (n) n.addEventListener('click', () => DemoUI.closeQ());
 });
 
 // --- GAME DATA ---
 const PARTS_DB = [
-    { name: "Phishing", q: "An email from 'IT Support' asks you to confirm your password through a link. What do you do first?", o: ["Click the link and log in quickly", "Reply with your password to be safe", "Don't click. Report it to the security team", "Forward it to colleagues as a warning"], a: 2, w: "Real IT teams never ask for your password by email. Report it, then delete it.", file: "Images/box.webp" },
-    { name: "Passwords", q: "Which password is the hardest to crack?", o: ["Password123!", "Four random words, like tulip-moon-brick-seven", "Your pet's name and birth year", "Your name spelled backwards"], a: 1, w: "Length beats cleverness. A passphrase of 4 or more random words is long and still easy to remember.", file: "Images/box.webp" },
-    { name: "MFA", q: "What does multi-factor authentication (MFA) add to your login?", o: ["A second proof it's really you, on top of the password", "A longer password", "Automatic virus scans", "A backup of your files"], a: 0, w: "Even if a password is stolen, the attacker still needs your second factor.", file: "Images/box.webp" },
-    { name: "Public Wi-Fi", q: "You need to check work email at an airport. What is the safest option?", o: ["Join the strongest open Wi-Fi network", "Use any network, since email is encrypted anyway", "Turn off your screen lock to move faster", "Use the company VPN or your phone's hotspot"], a: 3, w: "Open Wi-Fi can be watched or spoofed. A VPN or your own hotspot keeps your traffic private.", file: "Images/box.webp" },
-    { name: "USB drives", q: "You find a USB stick in the car park. What should you do?", o: ["Plug it in to find out who owns it", "Take it home and try it on a personal laptop", "Hand it to IT or security without plugging it in", "Plug it into a spare office PC to be safe"], a: 2, w: "Dropped USB sticks are a classic attack. Never plug in a device you don't trust.", file: "Images/box.webp" },
-    { name: "Updates", q: "Why should you install software updates promptly?", o: ["They make the screen brighter", "They fix known security holes that attackers use", "They free up storage by deleting old files", "They are optional and only change themes"], a: 1, w: "Most attacks use flaws that already have a fix. Updating closes the door.", file: "Images/box.webp" },
-    { name: "CEO fraud", q: "A caller says they're the CEO and urgently asks you to transfer money. What now?", o: ["Do it quickly, it's the CEO", "Ask them to read out their bank details", "Keep it secret, as they asked", "Verify through a separate, known channel before acting"], a: 3, w: "Urgency and secrecy are red flags. Always confirm through a number or channel you already trust.", file: "Images/box.webp" },
-    { name: "Data leaks", q: "You email a file with customer data to the wrong person. What should you do?", o: ["Report it to security straight away", "Hope they ignore it", "Delete it from your Sent folder", "Ask them to delete it and tell nobody"], a: 0, w: "Fast reporting limits the damage. Hiding a mistake makes it worse.", file: "Images/box.webp" },
-    { name: "Tailgating", q: "A stranger follows you closely through a secure door. What should you do?", o: ["Hold the door, it's polite", "Politely ask who they are and send them to reception", "Ignore them", "Lend them your badge for a minute"], a: 1, w: "Everyone badges in for themselves. Politely redirect visitors to reception.", file: "Images/box.webp" }
+    { name: "Phishing", q: "An email from 'IT Support' asks you to confirm your password through a link. What do you do first?", o: ["Click the link and log in quickly", "Reply with your password to be safe", "Don't click. Report it to the security team", "Forward it to colleagues as a warning"], a: 2, w: "Real IT teams never ask for your password by email. Report it, then delete it.", ic: ["link", "key", "shieldCheck", "forward"], file: "Images/box.webp" },
+    { name: "Passwords", q: "Which password is the hardest to crack?", o: ["Password123!", "Four random words, like tulip-moon-brick-seven", "Your pet's name and birth year", "Your name spelled backwards"], a: 1, w: "Length beats cleverness. A passphrase of 4 or more random words is long and still easy to remember.", ic: ["lockOpen", "words", "paw", "idRev"], file: "Images/box.webp" },
+    { name: "MFA", q: "What does multi-factor authentication (MFA) add to your login?", o: ["A second proof it's really you, on top of the password", "A longer password", "Automatic virus scans", "A backup of your files"], a: 0, w: "Even if a password is stolen, the attacker still needs your second factor.", ic: ["phoneCheck", "lockPlus", "bug", "cloud"], file: "Images/box.webp" },
+    { name: "Public Wi-Fi", q: "You need to check work email at an airport. What is the safest option?", o: ["Join the strongest open Wi-Fi network", "Use any network, since email is encrypted anyway", "Turn off your screen lock to move faster", "Use the company VPN or your phone's hotspot"], a: 3, w: "Open Wi-Fi can be watched or spoofed. A VPN or your own hotspot keeps your traffic private.", ic: ["wifi", "mailLock", "laptopX", "vpn"], file: "Images/box.webp" },
+    { name: "USB drives", q: "You find a USB stick in the car park. What should you do?", o: ["Plug it in to find out who owns it", "Take it home and try it on a personal laptop", "Hand it to IT or security without plugging it in", "Plug it into a spare office PC to be safe"], a: 2, w: "Dropped USB sticks are a classic attack. Never plug in a device you don't trust.", ic: ["usb", "home", "headset", "pc"], file: "Images/box.webp" },
+    { name: "Updates", q: "Why should you install software updates promptly?", o: ["They make the screen brighter", "They fix known security holes that attackers use", "They free up storage by deleting old files", "They are optional and only change themes"], a: 1, w: "Most attacks use flaws that already have a fix. Updating closes the door.", ic: ["sun", "shieldWrench", "trash", "palette"], file: "Images/box.webp" },
+    { name: "CEO fraud", q: "A caller says they're the CEO and urgently asks you to transfer money. What now?", o: ["Do it quickly, it's the CEO", "Ask them to read out their bank details", "Keep it secret, as they asked", "Verify through a separate, known channel before acting"], a: 3, w: "Urgency and secrecy are red flags. Always confirm through a number or channel you already trust.", ic: ["money", "card", "chatX", "call"], file: "Images/box.webp" },
+    { name: "Data leaks", q: "You email a file with customer data to the wrong person. What should you do?", o: ["Report it to security straight away", "Hope they ignore it", "Delete it from your Sent folder", "Ask them to delete it and tell nobody"], a: 0, w: "Fast reporting limits the damage. Hiding a mistake makes it worse.", ic: ["siren", "question", "mailTrash", "chatLock"], file: "Images/box.webp" },
+    { name: "Tailgating", q: "A stranger follows you closely through a secure door. What should you do?", o: ["Hold the door, it's polite", "Politely ask who they are and send them to reception", "Ignore them", "Lend them your badge for a minute"], a: 1, w: "Everyone badges in for themselves. Politely redirect visitors to reception.", ic: ["door", "idQ", "eyeOff", "badge"], file: "Images/box.webp" }
 ];
 
 const ASSETS = {
-    'bomb': 'Images/bomb.webp',
+    'bomb': 'Images/bird.webp',
     'box': 'Images/box.webp',
     'slingshot': 'Images/slingshot.webp'
 };
@@ -606,10 +734,10 @@ const Game = {
     PERSPECTIVE_MAX: 1.05,
     PERSPECTIVE_SQUASH: 0.92,
     BOMB_DRAW_SCALE: 0.52,
-    SLING_ANCHOR_Y: 0.5,
-    SLING_TIE_LEFT: { x: 0.36, y: 0.36 },
-    SLING_TIE_RIGHT: { x: 0.54, y: 0.36 },
-    SLING_TARGET_BOTTOM: 213,
+    SLING_ANCHOR_Y: 0.76,
+    SLING_TIE_LEFT: { x: 0.30, y: 0.22 },
+    SLING_TIE_RIGHT: { x: 0.70, y: 0.22 },
+    SLING_TARGET_BOTTOM: 62,
     BOMB_SPEED_SCALE: 0.5,
     BOMB_GLOW_RGB: '0,230,118',
     BOMB_GLOW_MIN: 0.35,
@@ -873,7 +1001,7 @@ const Game = {
                 this.isInitialized = true;
                 this.loop();
                 const hintEl = document.getElementById('hint');
-                if (hintEl) { hintEl.classList.add('show'); setTimeout(() => hintEl.classList.remove('show'), 9000); }
+                if (hintEl && !window.DemoIntroOpen) { hintEl.classList.add('show'); setTimeout(() => hintEl.classList.remove('show'), 9000); }
             } catch (err) {
                 console.error('Game engine initialization error:', err);
                 throw err;
@@ -1784,60 +1912,20 @@ const Game = {
     drawBomb: function(b) {
         try {
             if (!b || !b.position) return;
-            
-            const ctx = this.ctx;
-            if (!ctx) return;
-            
+            const ctx = this.ctx; if (!ctx) return;
             const r = b.circleRadius;
             if (!r || isNaN(r) || r <= 0) return;
             const perspective = this.getPerspectiveScale(b.position.y);
-            const drawR = r * this.BOMB_DRAW_SCALE;
-            const time = performance.now() * 0.001;
-            const blink = 0.5 + 0.5 * Math.sin(time * this.BOMB_BLINK_SPEED);
-            const glowAlpha = this.BOMB_GLOW_MIN + (this.BOMB_GLOW_MAX - this.BOMB_GLOW_MIN) * blink;
-            const glowRadius = drawR * (1.35 + 0.35 * blink);
-            
-            ctx.save(); 
-            ctx.translate(b.position.x, b.position.y); 
+            const img = Resources.images['bomb'];
+            ctx.save();
+            ctx.translate(b.position.x, b.position.y);
             ctx.scale(perspective, perspective);
-            const spin = time * this.BOMB_SPIN_SPEED;
-            ctx.rotate((b.angle || 0) + spin);
-            
-            try {
-                ctx.save();
-                ctx.globalCompositeOperation = 'lighter';
-                const glow = ctx.createRadialGradient(0, 0, drawR * 0.2, 0, 0, glowRadius);
-                glow.addColorStop(0, `rgba(${this.BOMB_GLOW_RGB}, ${glowAlpha})`);
-                glow.addColorStop(1, `rgba(${this.BOMB_GLOW_RGB}, 0)`);
-                ctx.fillStyle = glow;
-                ctx.beginPath();
-                ctx.arc(0, 0, glowRadius, 0, 6.28);
-                ctx.fill();
-                
-                const orbitAngle = time * this.BOMB_ORBIT_SPEED;
-                const orbitR = drawR * this.BOMB_ORBIT_RADIUS;
-                const orbitSize = Math.max(2, drawR * this.BOMB_ORBIT_SIZE);
-                ctx.fillStyle = `rgba(${this.BOMB_GLOW_RGB}, ${0.45 + 0.4 * blink})`;
-                ctx.beginPath();
-                ctx.arc(Math.cos(orbitAngle) * orbitR, Math.sin(orbitAngle) * orbitR, orbitSize, 0, 6.28);
-                ctx.fill();
-                ctx.restore();
-                
-                if(Resources.images['bomb'] && Resources.images['bomb'].complete) {
-                    ctx.drawImage(Resources.images['bomb'], -drawR*1.5, -drawR*1.5, drawR*3, drawR*3);
-                } else {
-                    ctx.fillStyle='black';
-                    ctx.beginPath();
-                    ctx.arc(0, 0, drawR, 0, 6.28);
-                    ctx.fill();
-                }
-            } catch (err) {
-                console.warn('Error drawing bomb:', err);
-                // Fallback
-                ctx.fillStyle='black';
-                ctx.beginPath();
-                ctx.arc(0, 0, drawR, 0, 6.28);
-                ctx.fill();
+            ctx.rotate(b.angle || 0);
+            const d = r * 2.35;
+            if (img && img.complete && img.naturalWidth) {
+                ctx.drawImage(img, -d / 2, -d / 2, d, d);
+            } else {
+                ctx.fillStyle = '#6c3fd6'; ctx.beginPath(); ctx.arc(0, 0, r, 0, 6.28); ctx.fill();
             }
             ctx.restore();
         } catch (err) {
@@ -1856,19 +1944,28 @@ const Game = {
     drawGridBase: function(b) {
         try {
             if (!b || !b.position || !b.bounds) return;
-            const ctx = this.ctx;
-            if (!ctx) return;
-
+            const ctx = this.ctx; if (!ctx) return;
             const s = this.scaleFactor || 1;
-            const w = b.bounds.max.x - b.bounds.min.x;
-            const h = b.bounds.max.y - b.bounds.min.y;
-            if (!w || !h) return;
-
+            const x0 = b.bounds.min.x - 6 * s, x1 = b.bounds.max.x + 6 * s;
+            const y0 = b.bounds.min.y, th = 26 * s, w = x1 - x0, r = 7 * s;
+            const rr = (x, y, ww, hh, rad) => {
+                ctx.beginPath(); ctx.moveTo(x + rad, y); ctx.lineTo(x + ww - rad, y); ctx.quadraticCurveTo(x + ww, y, x + ww, y + rad);
+                ctx.lineTo(x + ww, y + hh - rad); ctx.quadraticCurveTo(x + ww, y + hh, x + ww - rad, y + hh); ctx.lineTo(x + rad, y + hh);
+                ctx.quadraticCurveTo(x, y + hh, x, y + hh - rad); ctx.lineTo(x, y + rad); ctx.quadraticCurveTo(x, y, x + rad, y); ctx.closePath();
+            };
             ctx.save();
-            ctx.translate(b.position.x, b.position.y);
-            ctx.rotate(b.angle || 0);
-            // Transparent base: keep body for alignment, skip visible fill
-            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(30,60,20,.28)';
+            ctx.beginPath(); ctx.ellipse((x0 + x1) / 2, y0 + th + 2 * s, w / 2, 7 * s, 0, 0, 6.28); ctx.fill();
+            const g = ctx.createLinearGradient(0, y0, 0, y0 + th);
+            g.addColorStop(0, '#f0b868'); g.addColorStop(0.5, '#cf8a3e'); g.addColorStop(1, '#a8672c');
+            ctx.fillStyle = g; ctx.strokeStyle = '#3a2230'; ctx.lineWidth = 3 * s;
+            rr(x0, y0, w, th, r); ctx.fill(); ctx.stroke();
+            ctx.strokeStyle = 'rgba(58,34,48,.42)'; ctx.lineWidth = 2 * s;
+            for (let x = x0 + 84 * s; x < x1 - 30 * s; x += 84 * s) { ctx.beginPath(); ctx.moveTo(x, y0 + 4 * s); ctx.lineTo(x, y0 + th - 4 * s); ctx.stroke(); }
+            ctx.strokeStyle = 'rgba(255,236,190,.65)'; ctx.lineWidth = 2.5 * s;
+            ctx.beginPath(); ctx.moveTo(x0 + 10 * s, y0 + 6 * s); ctx.lineTo(x1 - 10 * s, y0 + 6 * s); ctx.stroke();
+            ctx.fillStyle = '#5a3a1a';
+            [x0 + 14 * s, x1 - 14 * s].forEach(nx => { ctx.beginPath(); ctx.arc(nx, y0 + th / 2, 2.6 * s, 0, 6.28); ctx.fill(); });
             ctx.restore();
         } catch (err) {
             console.warn('Error drawing grid base:', err);
@@ -1896,14 +1993,14 @@ const Game = {
             y: start.y + dy * 0.78 + ny * sideOffset + sag * 0.6
         };
 
-        const baseW = Math.min(10 * s, 4.5 * s + dist * 0.012);
+        const baseW = Math.min(13 * s, 6 * s + dist * 0.014);
 
         ctx.save();
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.shadowColor = isFront ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.25)';
         ctx.shadowBlur = 6 * s;
-        ctx.strokeStyle = isFront ? '#2E3A33' : '#27302B';
+        ctx.strokeStyle = isFront ? '#6a2f22' : '#4a2018';
         ctx.lineWidth = baseW;
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
@@ -1918,7 +2015,7 @@ const Game = {
         ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y);
         ctx.stroke();
 
-        ctx.strokeStyle = 'rgba(0,0,0,0.28)';
+        ctx.strokeStyle = 'rgba(0,0,0,0)';
         ctx.lineWidth = baseW * 0.35;
         ctx.setLineDash([5 * s, 7 * s]);
         ctx.lineDashOffset = -(performance.now() * 0.02);
